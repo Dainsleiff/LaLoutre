@@ -74,22 +74,6 @@
         self::initTableau();
         break;
 
-        case 'viewPhoto':
-        $firstImg = $this->data['imgDAO']->getFirstImage();
-        $this->data['ImgIdFirst'] = $firstImg->getId();
-        self::initTableau();
-        include_once "view/viewPhoto.view.php";
-        break;
-
-        case 'first':
-        $firstImg = $this->data['imgDAO']->getFirstImage();
-        $this->data['imgId'] = $firstImg->getId();
-        $this->data['imgUrl'] = $firstImg->getURL();
-        self::initTableau();
-        include_once "view/viewPhoto.view.php";
-        break;
-
-
         case 'prev':
          //pas besoin de beaucoup de traitement car les images précédentes sont initialisées dans le constructeur.
          //on initialise le tableau après avoir mis à jour les données

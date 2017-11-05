@@ -19,6 +19,9 @@
     function getId() {
       return $this->id;
     }
+    function getCategorie(){
+      return $this->categorie;
+    }
   }
 
 

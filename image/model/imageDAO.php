@@ -14,6 +14,7 @@
 		# Tableau pour stocker tous les chemins des images
 		private $imgEntry;
 		private $size = null;
+		private $categorieSearch = null;
 		//objet PDO
 		private $db = null;
 		# Lecture récursive d'un répertoire d'images
@@ -78,6 +79,10 @@
 
 		function getImage($id){
 			$req = 'SELECT * FROM image WHERE id=:id';
+			//si une catégorie est recherchée on l'ajoute à la rechercher
+			if(isset($this->categorieSearch) && $this->categorieSearch != ''){
+				'lol';
+			}
 			$stmt =$this->db->prepare($req);
 			if($stmt == true){
 				$stmt->BindParam(':id',$id,PDO::PARAM_INT);
@@ -130,6 +135,11 @@
 			}
 		}
 
+		#Setter del'attribut categorieSearch (catégorie à rechercher)
+		#$categorie String
+		function setCategorieSearch($categorie){
+			$this->categorieSearch = $categorie;
+		}
 		# saute en avant ou en arrière de $nb images
 		# Retourne la nouvelle image
 		function jumpToImage(image $img,$nb,$avancer,$reculer) {
@@ -159,7 +169,29 @@
 			}
 			return $res;
 		}
-	}
+
+		function getAllCategories(){
+			$req = 'SELECT DISTINCT category FROM image';
+			$stmt =$this->db->prepare($req);
+			if($stmt == true){
+				$stmt->execute();
+				$results = $stmt->fetchAll(PDO::FETCH_OBJ);
+			}
+			else{
+				print "Error in getAllCategories <br/>";
+				$err = $this->db->errorInfo();
+				var_dump($err);
+				$results = null;
+			}
+			return $results;
+		}
+
+}
+
+
+
+
+
 
 	# Test unitaire
 	# Appeler le code PHP depuis le navigateur avec la variable test

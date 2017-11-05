@@ -44,6 +44,18 @@
     $this->data['imgPrev'] = $this->data['imgDAO']->getPrevImage($img);
     $this->data['imgIdPrev'] = $this->data['imgPrev']->getId();
     $this->data['imgUrlPrev'] = $this->data['imgNext']->getURL();
+
+    //on récupère la catégorie séléctionné si elle existe et on charge la categorieSearch dans l'objet imgDAO
+    if(isset($_GET['categorieSearch'])){
+      $_SESSION['categorieSearch'] = $_GET['categorieSearch'];
+      $this->data['imgDAO']->setCategorieSearch($_SESSION['categorieSearch']);
+    }
+    else{
+      if(!isset($_SESSION['categorieSearch'])){
+        $_SESSION['categorieSearch'] == '';
+      }
+    }
+
    }
 
 
@@ -51,10 +63,6 @@
 
    public function launchAction(){
      switch ($this->action) {
-       case 'aPropos':
-       include_once 'view/aPropos.view.php';
-       self::initTableau();
-       break;
 
        case 'viewPhoto':
        $firstImg = $this->data['imgDAO']->getFirstImage();

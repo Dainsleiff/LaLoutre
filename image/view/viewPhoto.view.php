@@ -7,7 +7,7 @@
 		<link rel="stylesheet" type="text/css" href="style.css" media="screen" title="Normal" />
 		</head>
 	<body>
-		<div id="entete">
+		<div id="entete" >
 			<h1>Site SIL3</h1>
 			</div>
 		<div id="menu">
@@ -24,14 +24,37 @@
 
 		<div id="corps">
 			<?php # mise en place de la vue partielle : le contenu central de la page
-				//mise en place du formulaire caché pour passer les données
-				print '<form id="test" action="le_lien_vers_ta_page" method="post">';
 				# Mise en place des deux boutons
 				print "<p>\n";
 				//action pour image précédente
 				print "<a href=\"index.php?controller=photo&action=prev&imgId=".$this->data['imgIdPrev']."&size=".$this->data['size']."\">Prev</a> ";
 				//action pour image suivante
 				print "<a href=\"index.php?controller=photo&action=next&imgId=".$this->data['imgIdNext']."&size=".$this->data['size']."\">Next</a>\n";
+			?>
+
+				<!-- Champs de recherche des catégories -->
+				<form action="index.php" method="GET">
+	 			Recherche par catégorie:<br>
+	 			<input type="text" name="categorieSearch" list="categories" value="<?php echo $_SESSION['categorieSearch'];?>"><br>
+				<datalist id="categories">
+					<?php foreach ($this->data['imgDAO']->getAllCategories() as $categorie) {
+
+						print "<option value=\"".$categorie->category."\">";
+					};
+					?>
+				</datalist>
+				<input type="hidden" name="controller" value="photo">
+				<input type="hidden" name="action" value="viewPhoto">
+				<input type="submit" name='submit' value="Validation">
+ 				</fieldset>
+				</form>
+				<form class="" action="index.php" method="get">
+					<input type="hidden" name="controller" value="photo">
+					<input type="hidden" name="action" value="viewPhoto">
+					<input type="submit" name="reset" value="Annuler la recherche">
+				</form>
+
+				<?php
 				print "</p>\n";
 				# Zoom l'image avec une reaction au click
 				print "<a href=\"index.php?controller=photo&action=zoomPlus&imgId=".$this->data['imgId']."&size=".$this->data['size']."\">\n";
