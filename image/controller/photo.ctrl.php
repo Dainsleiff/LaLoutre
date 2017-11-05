@@ -22,12 +22,14 @@
        $this->data['imgId'] = $_GET["imgId"];
        $img = $this->data['imgDAO']->getImage($this->data['imgId']);
        $this->data['imgUrl'] = $img->getURL();
+       $this->data['imgCommentaire'] = $img->getCommentaire();
      } else {
        // Pas d'image, se positionne sur la première
        $img = $this->data['imgDAO']->getFirstImage();
        // Conserve son id pour définir l'état de l'interface
        $this->data['imgId'] = $img->getId();
        $this->data['imgUrl'] = $img->getURL();
+       $this->data['imgCommentaire'] = $img->getCommentaire();
      }
 
      // Regarde si une taille pour l'image est connue
@@ -114,6 +116,7 @@
             $img = $this->data['imgDAO']->getRandomImage();
             $this->data['imgId'] = $img->getId();
             $this->data['imgUrl'] = $img->getURL();
+            $this->data['imgCommentaire'] = $img->getCommentaire();
             //on initialisele tableau après avoir mis à jour les données
             self::initTableau();
             include_once "view/viewPhoto.view.php";

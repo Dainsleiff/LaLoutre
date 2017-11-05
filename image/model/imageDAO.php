@@ -89,7 +89,7 @@
 				$stmt->execute();
 				$result = $stmt->fetchAll(PDO::FETCH_OBJ);
 				$result = $result[0];
-				$imgReturned = new Image(self::urlPath.'/'.$result->path,$result->id,$result->category);
+				$imgReturned = new Image(self::urlPath.'/'.$result->path,$result->id,$result->category,$result->comment);
 			}
 			else {
 				print "Error in getImage. id=".$id."<br/>";

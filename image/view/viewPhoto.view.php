@@ -62,6 +62,7 @@
 				// Réalise l'affichage de l'image
 				print "<img src=\"".$this->data['imgUrl']."\" width=\"".$this->data['size']."\">\n";
 				print "</a>\n";
+				print "<p>".$this->data['imgCommentaire']."</p>\n";
 				?>
 			</div>
 
