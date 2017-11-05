@@ -47,6 +47,9 @@
     $this->data['imgIdPrev'] = $this->data['imgPrev']->getId();
     $this->data['imgUrlPrev'] = $this->data['imgNext']->getURL();
 
+    //on initialise le commentaire et la catégorie
+    $this->data['imgCommentaire'] = $img->getCommentaire();
+    $this->data['imgCategorie'] = $img->getCategorie();
     //on récupère la catégorie séléctionné si elle existe et on charge la categorieSearch dans l'objet imgDAO
     if(isset($_GET['categorieSearch'])){
       $_SESSION['categorieSearch'] = $_GET['categorieSearch'];
@@ -77,6 +80,8 @@
        $firstImg = $this->data['imgDAO']->getFirstImage();
        $this->data['imgId'] = $firstImg->getId();
        $this->data['imgUrl'] = $firstImg->getURL();
+       $this->data['imgCommentaire'] = $img->getCommentaire();
+       $this->data['imgCategorie'] = $img->getCategorie();
        self::initTableau();
        include_once "view/viewPhoto.view.php";
        break;
@@ -117,10 +122,23 @@
             $this->data['imgId'] = $img->getId();
             $this->data['imgUrl'] = $img->getURL();
             $this->data['imgCommentaire'] = $img->getCommentaire();
+            $this->data['imgCategorie'] = $img->getCategorie();
             //on initialisele tableau après avoir mis à jour les données
             self::initTableau();
             include_once "view/viewPhoto.view.php";
           break;
+
+        case 'changeData':
+            //on change le commentaire et/ou la catégorie
+            //on appele la methode du DAO pour changer la categorie
+            var_dump($_GET);
+            $this->data['imgCommentaire'] = $_GET['commentaire'];
+            $this->data['imgCategorie'] = $_GET['categorie'];
+            $this->data['imgDAO']->changeCategory($_GET['categorie'],$this->data['imgId']);
+            $this->data['imgDAO']->changeComment($_GET['commentaire'],$this->data['imgId']);
+            self::initTableau();
+            include_once "view/viewPhoto.view.php";
+        break;
 
        default:
        include_once 'view/home.view.php';

@@ -186,6 +186,40 @@
 			return $results;
 		}
 
+		function changeComment($comment,$id){
+			$req = 'UPDATE image SET comment =:comment WHERE id=:id';
+			$stmt =$this->db->prepare($req);
+			if($stmt == true){
+				$res =$stmt->execute(array(':comment'=>$comment,':id'=>$id));
+				if($res == false){
+					var_dump($res);
+				}
+			}
+			else {
+				print "Error in changeComment while prepare.<br/>";
+				$err = $this->db->errorInfo();
+				var_dump($err);
+			}
+		}
+
+		function changeCategory($category,$id){
+			$req = 'UPDATE image SET category = :category WHERE id=:id';
+			$stmt =$this->db->prepare($req);
+			if($stmt == true){
+				var_dump($category);
+				var_dump($id);
+				$stmt->BindParam(':category',$category,PDO::PARAM_STR);
+				$stmt->BindParam(':id',$id,PDO::PARAM_INT);
+				$res =$stmt->execute();
+				var_dump($res);
+			}
+			else {
+				print "Error in changeCategory while prepare.<br/>";
+				$err = $this->db->errorInfo();
+				var_dump($err);
+			}
+		}
+
 }
 
 

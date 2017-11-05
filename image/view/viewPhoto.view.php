@@ -62,8 +62,23 @@
 				// Réalise l'affichage de l'image
 				print "<img src=\"".$this->data['imgUrl']."\" width=\"".$this->data['size']."\">\n";
 				print "</a>\n";
-				print "<p>".$this->data['imgCommentaire']."</p>\n";
 				?>
+
+				<!-- Affichage et modification du commentaire -->
+				<form class="no-border no-background" action="index.php" method="get">
+					<legend>Comment :</legend>
+					<input type="text" name="commentaire" value="<?php echo $this->data['imgCommentaire'];?>">
+					<legend>Category :</legend>
+					<input type="text" name="categorie" value="<?php echo $this->data['imgCategorie'];?>">
+					<input type='hidden' name='imgId' value="<?php echo $this->data['imgId'];?>">
+					<input type="hidden" name="controller" value="photo">
+					<input type="hidden" name="action" value="changeData">
+					<input type="submit" name='submit' value='Changer les infos'>
+				</form>
+
+
+
+
 			</div>
 
 		<div id="pied_de_page">
