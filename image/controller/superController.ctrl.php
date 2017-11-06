@@ -6,15 +6,15 @@
 
 			function __construct() {
 				// récupération du controller
-				if(isset($_GET['controller']) && $_GET['controller'] !=''){
-					$this->controller = $_GET['controller'];
+				if(isset($_REQUEST['controller']) && $_REQUEST['controller'] !=''){
+					$this->controller = $_REQUEST['controller'];
 				}
 				else{
 						$this->controller = 'home';
 				}
 				//récupération
-				if (isset($_GET['action']) && $_GET['action'] !='') {
-					$this->action = $_GET['action'];
+				if (isset($_REQUEST['action']) && $_REQUEST['action'] !='') {
+					$this->action = $_REQUEST['action'];
 				}
 				else {
 					$this->action = 'default';

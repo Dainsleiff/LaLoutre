@@ -172,5 +172,6 @@
         $this->data['menu']['More']="index.php?controller=photoMatrix&action=more&imgId=".$this->data['imgId']."&size=".$this->data['size']."&nbImg=".$this->data['nbImgPlus'];
         $this->data['menu']['Less']="index.php?controller=photoMatrix&action=less&imgId=".$this->data['imgId']."&size=".$this->data['size']."&nbImg=".$this->data['nbImgMoins'];
       }
+      $this->data['menu']['Ajouter une image'] = 'index.php?controller=photo&action=addImg';
     }
 }

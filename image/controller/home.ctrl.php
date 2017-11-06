@@ -14,6 +14,7 @@ class home{
     $this->data['menu']['Home']='index.php';
     $this->data['menu']['aPropos']='index.php?controller=home&action=aPropos';
     $this->data['menu']['Voir photos']='index.php?controller=photo&action=viewPhoto';
+    $this->data['menu']['Ajouter une image'] = 'index.php?controller=photo&action=addImg';
   }
 
   public function launchAction(){
@@ -21,7 +22,7 @@ class home{
       case 'aPropos':
       include_once 'view/aPropos.view.php';
       break;
-      
+
       default:
       include_once 'view/home.view.php';
       break;

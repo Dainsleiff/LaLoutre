@@ -10,7 +10,6 @@
 		private $path="model/IMG";
 		# Chemin URL où se trouvent les images
 		const urlPath="http://localhost/sites/php/LaLoutre/image/model/IMG";
-
 		# Tableau pour stocker tous les chemins des images
 		private $imgEntry;
 		private $size = null;
@@ -235,6 +234,7 @@
 			return $res;
 		}
 
+		//fonction pour afficher l'ensemble des catégories existantes en base
 		function getAllCategories(){
 			$req = 'SELECT DISTINCT category FROM image';
 			$stmt =$this->db->prepare($req);
@@ -251,6 +251,7 @@
 			return $results;
 		}
 
+		//fonction pour changer le commentaire d'une image
 		function changeComment($comment,$id){
 			$req = 'UPDATE image SET comment =:comment WHERE id=:id';
 			$stmt =$this->db->prepare($req);
@@ -267,6 +268,7 @@
 			}
 		}
 
+		//fonction pour changer la catégorie d'une image
 		function changeCategory($category,$id){
 			$req = 'UPDATE image SET category = :category WHERE id=:id';
 			$stmt =$this->db->prepare($req);
@@ -276,12 +278,30 @@
 				$stmt->BindParam(':category',$category,PDO::PARAM_STR);
 				$stmt->BindParam(':id',$id,PDO::PARAM_INT);
 				$res =$stmt->execute();
-				var_dump($res);
 			}
 			else {
 				print "Error in changeCategory while prepare.<br/>";
 				$err = $this->db->errorInfo();
 				var_dump($err);
+			}
+		}
+
+		//fonction d'ajout d'image unique
+		function addImg($url,$category,$comment){
+			$req = "INSERT into image values(NULL,:url,:category,:comment)"; //on mets l'id à null car autoincremente
+			$stmt =$this->db->prepare($req);
+			if($stmt == true){
+				$stmt->BindParam(':url',$url,PDO::PARAM_STR);
+				$stmt->BindParam(':category',$category,PDO::PARAM_STR);
+				$stmt->BindParam(':comment',$comment,PDO::PARAM_STR);
+				$res =$stmt->execute();
+				return $res;
+			}
+			else{
+				print "Error in addImg while prepare.<br/>";
+				$err = $this->db->errorInfo();
+				var_dump($err);
+				return null;
 			}
 		}
 

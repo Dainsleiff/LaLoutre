@@ -12,8 +12,8 @@
    function __construct() {
      $this->data['imgDAO'] = new ImageDAO();
      //récupération
-     if (isset($_GET['action']) && $_GET['action'] !='') {
-       $this->action = $_GET['action'];
+     if (isset($_REQUEST['action']) && $_REQUEST['action'] !='') {
+       $this->action = $_REQUEST['action'];
      }
      else {
        $this->action = 'default';
@@ -60,7 +60,9 @@
         $_SESSION['categorieSearch'] = '';
       }
     }
-
+    if(isset($_REQUEST['submit'])){
+      $this->data['submit'] = $_REQUEST['submit'];
+    }
    }
 
 
@@ -169,6 +171,65 @@
             include_once "view/viewPhoto.view.php";
         break;
 
+        case 'addImg' :
+        //fonction d'ajout d'image
+          self::initTableau();
+
+          //dans le cas ou l'on sort du formulaire d'ajout
+          if(isset($this->data['submit'])){
+            //on récup les données commentaire/catégorie.
+            if(isset($_POST['commentaire'])){
+              $this->data['commentaire'] = $_POST['commentaire'];
+            }
+            else{
+              print 'Le commentaire du formulaire d\'ajout d\'image n\'est pas récupéré';
+            }
+            if(isset($_POST['categorie'])){
+              $this->data['categorie'] = $_POST['categorie'];
+            }
+            else{
+              print 'La categorie du formulaire d\'ajout d\'image n\'est pas récupérée';
+            }
+
+            //si on upload une image via url
+            if(isset($_POST['url'])){
+              var_dump('A faire pour url en ligne');
+              var_dump('Ca va etre la merde avec les paths parcequ on rajoute localhost:// à l url quand on getImage dans ImageDAO');
+              var_dump('solution : on ajouteun champs boolean en base qui précise si upload local ou via url');
+
+
+
+
+
+            }
+
+            //si on upload via le local
+            else{
+              $this->data['uploadDir'] = '/var/www/html/sites/php/LaLoutre/image/model/IMG/jons/uploads/';
+              $this->data['uploadFile'] = $this->data['uploadDir'] . basename($_FILES['userfile']['name']);
+              $this->data['uploadDirForBDD'] = 'jons/uploads/'.$_FILES['userfile']['name'];
+              if (move_uploaded_file($_FILES['userfile']['tmp_name'], $this->data['uploadFile'])) {
+                $res = $this->data['imgDAO']->addImg($this->data['uploadDirForBDD'],$this->data['categorie'],$this->data['commentaire']);
+                if($res){
+                  $this->data['resultAdd'] = "Le fichier est valide, et a été téléchargé
+                  avec succès.\n";
+                }
+                else{
+                  $this->data['resultAdd'] = "Le fichier est valide, a été upload sur le server mais pas en base.\n";
+                }
+              } else {
+                  $this->data['resultAdd'] = "Attaque potentielle par téléchargement de fichiers.Upload bloquée.
+                        Voici plus d'informations :\n";
+                        print_r($_FILES);
+              }
+            }
+            include_once 'view/validationAddFile.view.php';
+          }
+          //dans le cas ou on veut accéder au formulaire d'ajout
+          else{
+            include_once 'view/addPhoto.view.php';
+          }
+        break;
        default:
        include_once 'view/home.view.php';
        break;
@@ -192,6 +253,7 @@
      }
      $this->data['menu']['Zoom +']="index.php?controller=photo&action=zoomPlus&imgId=".$this->data['imgId']."&size=".$this->data['size'];
      $this->data['menu']['Zoom -']="index.php?controller=photo&action=zoomMoins&imgId=".$this->data['imgId']."&size=".$this->data['size'];
+     $this->data['menu']['Ajouter une image'] = 'index.php?controller=photo&action=addImg';
    }
  }
  ?>
