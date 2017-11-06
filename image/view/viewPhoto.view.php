@@ -27,9 +27,17 @@
 				# Mise en place des deux boutons
 				print "<p>\n";
 				//action pour image précédente
-				print "<a href=\"index.php?controller=photo&action=prev&imgId=".$this->data['imgIdPrev']."&size=".$this->data['size']."\">Prev</a> ";
+				if (isset($_GET['categorieSearch'])) {
+					print "<a href=\"index.php?controller=photo&action=prevOfCat&imgId=".$this->data['imgId']."&size=".$this->data['size']."&categorieSearch=".$this->data['imgCategorie']."\">Prev</a> ";
+				} else {
+					print "<a href=\"index.php?controller=photo&action=prev&imgId=".$this->data['imgIdPrev']."&size=".$this->data['size']."\">Prev</a> ";
+				}
 				//action pour image suivante
-				print "<a href=\"index.php?controller=photo&action=next&imgId=".$this->data['imgIdNext']."&size=".$this->data['size']."\">Next</a>\n";
+				if (isset($_GET['categorieSearch'])) {
+					print "<a href=\"index.php?controller=photo&action=nextOfCat&imgId=".$this->data['imgId']."&size=".$this->data['size']."&categorieSearch=".$this->data['imgCategorie']."\">Next</a>\n";
+				} else {
+					print "<a href=\"index.php?controller=photo&action=next&imgId=".$this->data['imgIdNext']."&size=".$this->data['size']."\">Next</a>\n";
+				}
 			?>
 
 				<!-- Champs de recherche des catégories -->
@@ -44,7 +52,7 @@
 					?>
 				</datalist>
 				<input type="hidden" name="controller" value="photo">
-				<input type="hidden" name="action" value="viewPhoto">
+				<input type="hidden" name="action" value="catPhoto">
 				<input type="submit" name='submit' value="Validation">
  				</fieldset>
 				</form>

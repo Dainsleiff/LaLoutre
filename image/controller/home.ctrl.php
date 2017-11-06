@@ -21,7 +21,7 @@ class home{
       case 'aPropos':
       include_once 'view/aPropos.view.php';
       break;
-
+      
       default:
       include_once 'view/home.view.php';
       break;

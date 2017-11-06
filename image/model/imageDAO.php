@@ -77,19 +77,35 @@
 			return new Image(self::urlPath.$this->try[$imgId-1],$imgId);;
 		}
 
-		function getImage($id){
+		function getImage($id = 1, $strict = 0){
 			$req = 'SELECT * FROM image WHERE id=:id';
 			//si une catégorie est recherchée on l'ajoute à la rechercher
 			if(isset($this->categorieSearch) && $this->categorieSearch != ''){
-				'lol';
+				$req = "SELECT * FROM image WHERE category=:category";
+				if ($strict) {
+					$req .= " AND id=:id";
+				}
 			}
 			$stmt =$this->db->prepare($req);
-			if($stmt == true){
+			if($stmt == true && ! (isset($this->categorieSearch) && $this->categorieSearch != '')){
 				$stmt->BindParam(':id',$id,PDO::PARAM_INT);
 				$stmt->execute();
 				$result = $stmt->fetchAll(PDO::FETCH_OBJ);
 				$result = $result[0];
 				$imgReturned = new Image(self::urlPath.'/'.$result->path,$result->id,$result->category,$result->comment);
+			} elseif ($stmt == true && isset($this->categorieSearch) && $this->categorieSearch != '') {
+				$stmt->BindParam(':category', $this->categorieSearch, PDO::PARAM_STR);
+				if ($strict) {
+					$stmt->BindParam(':id',$id,PDO::PARAM_INT);
+				}
+				$stmt->execute();
+				$result = $stmt->fetchAll(PDO::FETCH_OBJ);
+				if ($result) {
+					$result = $result[0];
+					$imgReturned = new Image(self::urlPath.'/'.$result->path,$result->id,$result->category,$result->comment);
+				} else {
+					$imgReturned = $this;
+				}
 			}
 			else {
 				print "Error in getImage. id=".$id."<br/>";
@@ -110,29 +126,49 @@
 
 		# Retourne l'objet de la premiere image
 		function getFirstImage() {
-			return $this->getImage(1);
+			return $this->getImage();
 		}
 
 		# Retourne l'image suivante d'une image
-		function getNextImage(image $img) {
-			$id = $img->getId();
-			if ($id < $this->size()) {
+		function getNextImage($id) {
+			if (isset($this->categorieSearch) && $this->categorieSearch != '') {
+				$req = "SELECT * FROM image WHERE category=:category AND id>:id";
+				$stmt = $this->db->prepare($req);
+				$stmt->BindParam(':category',$this->categorieSearch,PDO::PARAM_STR);
+				$stmt->BindParam(':id',$id,PDO::PARAM_INT);
+				$stmt->execute();
+				$result = $stmt->fetchAll(PDO::FETCH_OBJ);
+				if ($result == null) {
+					$img = $this->getImage();
+				} else {
+					$img = $this->getImage($result[0]->id, 1);
+				}
+			} elseif ($id < $this->size()) {
 				$img = $this->getImage($id+1);
 			}
 			return $img;
 		}
 
 		# Retourne l'image précédente d'une image
-		function getPrevImage(image $img) {
-			#trigger_error("Non réalisé");
-			$id = $img->getId();
-			if($id == 1){
-				return $img;
-			}
-			else {
+		function getPrevImage($id) {
+			if (isset($this->categorieSearch) && $this->categorieSearch != '') {
+				$req = "SELECT * FROM image WHERE category=:category AND id>:id";
+				$stmt = $this->db->prepare($req);
+				$stmt->BindParam(':category',$this->categorieSearch,PDO::PARAM_STR);
+				$stmt->BindParam(':id',$id,PDO::PARAM_INT);
+				$stmt->execute();
+				$result = $stmt->fetchAll(PDO::FETCH_OBJ);
+				if ($result == null) {
+					$img = $this->getImage();
+				} else {
+					$img = $this->getImage($result[0]->id, 1);
+				}
+			} elseif($id == 1){
+				$img = $this->getImage();
+			} else {
 				$img = $this->getImage($id-1);
-				return $img;
 			}
+			return $img;
 		}
 
 		#Setter del'attribut categorieSearch (catégorie à rechercher)
@@ -144,11 +180,33 @@
 		# Retourne la nouvelle image
 		function jumpToImage(image $img,$nb,$avancer,$reculer) {
 			$id = $img->getId();
-			$condition = $id+$nb;
-			if($reculer && (($id-$nb) >= 1)){
+			if (isset($this->categorieSearch) && $this->categorieSearch != '' && $avancer) {
+				$req = "SELECT * FROM image WHERE category=:category AND id>:id";
+				$stmt = $this->db->prepare($req);
+				$stmt->BindParam(':category',$this->categorieSearch,PDO::PARAM_STR);
+				$stmt->BindParam(':id',$id,PDO::PARAM_INT);
+				$stmt->execute();
+				$result = $stmt->fetchAll(PDO::FETCH_OBJ);
+				if ($result == null || ! isset($result[$nb-1])) {
+					$img = $this->getImage();
+				} else {
+					$img = $this->getImage($result[$nb-1]->id, 1);
+				}
+			} elseif (isset($this->categorieSearch) && $this->categorieSearch != '' && $reculer) {
+				$req = "SELECT * FROM image WHERE category=:category AND id<:id";
+				$stmt = $this->db->prepare($req);
+				$stmt->BindParam(':category',$this->categorieSearch,PDO::PARAM_STR);
+				$stmt->BindParam(':id',$id,PDO::PARAM_INT);
+				$stmt->execute();
+				$result = $stmt->fetchAll(PDO::FETCH_OBJ);
+				if ($result == null || ! isset($result[$nb-1])) {
+					$img = $this->getImage();
+				} else {
+					$img = $this->getImage($result[$nb-1]->id, 1);
+				}
+			} elseif($reculer && (($id-$nb) >= 1)){
 				$img = $this->getImage($id-$nb);
-			}
-			else if($avancer && (($id+$nb) <= $this->size())){
+			} elseif($avancer && (($id+$nb) <= $this->size())){
 				$img = $this->getImage($id+$nb);
 			}
 			return $img;
@@ -163,9 +221,16 @@
 			}
 			$id = $img->getId();
 			$max = $id+$nb;
-			while ($id < $this->size() && $id < $max) {
-				$res[] = $this->getImage($id);
-				$id++;
+			if (isset($this->categorieSearch) && $this->categorieSearch != '') {
+				while ($img->getCategorie() == $this->categorieSearch && $id < $max) {
+					$res[] = $this->getImage($id, 1);
+					$id++;
+				}
+			} else {
+				while ($id < $this->size() && $id < $max) {
+					$res[] = $this->getImage($id);
+					$id++;
+				}
 			}
 			return $res;
 		}

@@ -40,10 +40,10 @@
        $this->data['size'] = 480;
      }
     //on initialise les images adjacentes (next/prev)
-    $this->data['imgNext'] = $this->data['imgDAO']->getNextImage($img);
+    $this->data['imgNext'] = $this->data['imgDAO']->getNextImage($img->getId());
     $this->data['imgIdNext'] = $this->data['imgNext']->getId();
     $this->data['imgUrlNext'] = $this->data['imgNext']->getURL();
-    $this->data['imgPrev'] = $this->data['imgDAO']->getPrevImage($img);
+    $this->data['imgPrev'] = $this->data['imgDAO']->getPrevImage($img->getId());
     $this->data['imgIdPrev'] = $this->data['imgPrev']->getId();
     $this->data['imgUrlPrev'] = $this->data['imgNext']->getURL();
 
@@ -57,7 +57,7 @@
     }
     else{
       if(!isset($_SESSION['categorieSearch'])){
-        $_SESSION['categorieSearch'] == '';
+        $_SESSION['categorieSearch'] = '';
       }
     }
 
@@ -80,12 +80,21 @@
        $firstImg = $this->data['imgDAO']->getFirstImage();
        $this->data['imgId'] = $firstImg->getId();
        $this->data['imgUrl'] = $firstImg->getURL();
+       $this->data['imgCommentaire'] = $firstImg->getCommentaire();
+       $this->data['imgCategorie'] = $firstImg->getCategorie();
+       self::initTableau();
+       include_once "view/viewPhoto.view.php";
+       break;
+
+       case 'catPhoto':
+       $img = $this->data['imgDAO']->getImage();
+       $this->data['imgId'] = $img->getId();
+       $this->data['imgUrl'] = $img->getURL();
        $this->data['imgCommentaire'] = $img->getCommentaire();
        $this->data['imgCategorie'] = $img->getCategorie();
        self::initTableau();
        include_once "view/viewPhoto.view.php";
        break;
-
 
        case 'prev':
         //pas besoin de beaucoup de traitement car l'image précédente est initialisée dans le constructeur.
@@ -96,6 +105,26 @@
 
       case 'next':
         //pas besoin de beaucoup de traitement car l'image suivante est initialisée dans le constructeur.
+        self::initTableau();
+        include_once "view/viewPhoto.view.php";
+        break;
+
+      case 'nextOfCat':
+        $img = $this->data['imgDAO']->getNextImage($this->data['imgId']);
+        $this->data['imgId'] = $img->getId();
+        $this->data['imgUrl'] = $img->getURL();
+        $this->data['imgCommentaire'] = $img->getCommentaire();
+        $this->data['imgCategorie'] = $img->getCategorie();
+        self::initTableau();
+        include_once "view/viewPhoto.view.php";
+        break;
+
+      case 'prevOfCat':
+        $img = $this->data['imgDAO']->getPrevImage($this->data['imgId']);
+        $this->data['imgId'] = $img->getId();
+        $this->data['imgUrl'] = $img->getURL();
+        $this->data['imgCommentaire'] = $img->getCommentaire();
+        $this->data['imgCategorie'] = $img->getCategorie();
         self::initTableau();
         include_once "view/viewPhoto.view.php";
         break;
@@ -150,9 +179,17 @@
      //action du menu
      $this->data['menu']['Home']='index.php';
      $this->data['menu']['aPropos']='index.php?controller=home&action=aPropos';
-     $this->data['menu']['First']='index.php?controller=photo&action=first&imgId='.$this->data['imgId']."&size=".$this->data['size'];
+     if (isset($_GET['categorieSearch'])) {
+      $this->data['menu']['First']='index.php?controller=photo&action=first&imgId='.$this->data['imgId']."&size=".$this->data['size'].'&categorieSearch='.$this->data['imgCategorie'];
+     } else {
+      $this->data['menu']['First']='index.php?controller=photo&action=first&imgId='.$this->data['imgId']."&size=".$this->data['size'];
+     }
      $this->data['menu']['Random']="index.php?controller=photo&action=random&imgId=".$this->data['imgId']."&size=".$this->data['size'];
-     $this->data['menu']['More']="index.php?controller=photoMatrix&action=more&imgId=".$this->data['imgId']."&size=".$this->data['size'];
+     if (isset($_GET['categorieSearch'])) {
+      $this->data['menu']['More']="index.php?controller=photoMatrix&action=more&imgId=".$this->data['imgId']."&size=".$this->data['size']."&categorieSearch=".$this->data['imgCategorie'];
+     } else {
+      $this->data['menu']['More']="index.php?controller=photoMatrix&action=more&imgId=".$this->data['imgId']."&size=".$this->data['size'];
+     }
      $this->data['menu']['Zoom +']="index.php?controller=photo&action=zoomPlus&imgId=".$this->data['imgId']."&size=".$this->data['size'];
      $this->data['menu']['Zoom -']="index.php?controller=photo&action=zoomMoins&imgId=".$this->data['imgId']."&size=".$this->data['size'];
    }
