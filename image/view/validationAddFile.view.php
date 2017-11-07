@@ -2,13 +2,6 @@
 // Dans les versions de PHP antiéreures à 4.1.0, la variable $HTTP_POST_FILES
 // doit être utilisée à la place de la variable $_FILES.
 
-
-    if(isset($_POST['url'])){
-      var_dump('A faire pour url en ligne');
-
-
-    }
-    else{
       // $uploaddir = '/var/www/html/sites/php/LaLoutre/image/model/IMG/jons/uploads/';
       // $uploadfile = $uploaddir . basename($_FILES['userfile']['name']);
       // var_dump($uploadfile);
@@ -24,6 +17,5 @@
       // }
       echo $this->data['resultAdd'];
       echo '</pre>';
-    }
     //"INSERT into image values(NULL,'url', 'category', 'comment')";
 ?>

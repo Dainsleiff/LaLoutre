@@ -97,7 +97,11 @@
 				$stmt->execute();
 				$result = $stmt->fetchAll(PDO::FETCH_OBJ);
 				$result = $result[0];
-				$imgReturned = new Image(self::urlPath.'/'.$result->path,$result->id,$result->category,$result->comment);
+				//changement de l'url si url local
+				if($result && $result->local == true){
+						$result->path = self::urlPath.'/'.$result->path;
+				}
+				$imgReturned = new Image($result->path,$result->id,$result->category,$result->comment);
 				//Recherche avec une catégorie renseignée
 			} elseif ($stmt == true && isset($this->categorieSearch) && $this->categorieSearch != '') {
 				$stmt->BindParam(':category', $this->categorieSearch, PDO::PARAM_STR);
@@ -109,7 +113,10 @@
 				if ($result) {
 					// $result un tableau de résultat. On prend le premier pour retourner une image.
 					$result = $result[0];
-					$imgReturned = new Image(self::urlPath.'/'.$result->path,$result->id,$result->category,$result->comment);
+					if($result && $result->local == true){
+							$result->path = self::urlPath.'/'.$result->path;
+					}
+					$imgReturned = new Image($result->path,$result->id,$result->category,$result->comment);
 				} else {
 					// si pas de résultat de requête, on recharge la même image
 					$imgReturned = $this;
@@ -379,13 +386,14 @@
 		}
 
 		//fonction d'ajout d'image unique
-		function addImg($url,$category,$comment){
-			$req = "INSERT into image values(NULL,:url,:category,:comment)"; //on mets l'id à null car autoincremente
+		function addImg($url,$category,$comment,$local){
+			$req = "INSERT into image values(NULL,:url,:category,:comment,NULL,NULL,:local)"; //on mets l'id à null car autoincremente et local = false pour gérer l'url dans le getImage
 			$stmt =$this->db->prepare($req);
 			if($stmt == true){
 				$stmt->BindParam(':url',$url,PDO::PARAM_STR);
 				$stmt->BindParam(':category',$category,PDO::PARAM_STR);
 				$stmt->BindParam(':comment',$comment,PDO::PARAM_STR);
+				$stmt->BindParam(':local',$local,PDO::PARAM_STR);
 				$res =$stmt->execute();
 				return $res;
 			}
