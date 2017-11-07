@@ -194,12 +194,17 @@
 
             //si on upload une image via url
             if(isset($_POST['url'])){
-              var_dump('A faire pour url en ligne');
-              var_dump('Ca va etre la merde avec les paths parcequ on rajoute localhost:// à l url quand on getImage dans ImageDAO');
-              var_dump('solution : on ajouteun champs boolean en base qui précise si upload local ou via url');
-
-
-
+              $this->data['urlImgBDD'] = $_POST['url'];
+              var_dump($this->data['urlImgBDD']);
+              $res = $this->data['imgDAO']->addImg($this->data['urlImgBDD'],$this->data['categorie'],$this->data['commentaire'],'false');
+              var_dump('LOOOOOOOOL');
+              if($res){
+                $this->data['resultAdd'] = "Le fichier est valide, et a été téléchargé
+                avec succès.\n";
+              }
+              else{
+                  $this->data['resultAdd'] = "Le fichier n'a pas été upload en base.\n";
+              }
 
 
             }
@@ -210,7 +215,7 @@
               $this->data['uploadFile'] = $this->data['uploadDir'] . basename($_FILES['userfile']['name']);
               $this->data['uploadDirForBDD'] = 'jons/uploads/'.$_FILES['userfile']['name'];
               if (move_uploaded_file($_FILES['userfile']['tmp_name'], $this->data['uploadFile'])) {
-                $res = $this->data['imgDAO']->addImg($this->data['uploadDirForBDD'],$this->data['categorie'],$this->data['commentaire']);
+                $res = $this->data['imgDAO']->addImg($this->data['uploadDirForBDD'],$this->data['categorie'],$this->data['commentaire'],'true');
                 if($res){
                   $this->data['resultAdd'] = "Le fichier est valide, et a été téléchargé
                   avec succès.\n";
@@ -244,8 +249,6 @@
           self::initTableau();
           include_once "view/viewPhoto.view.php";
         break;
-
-
 
 
        default:
