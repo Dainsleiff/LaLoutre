@@ -397,6 +397,22 @@
 			}
 		}
 
+		function addVote($id, $votes, $nbvotes, $note){
+			$req = "UPDATE image SET nbvote=:nbvote, vote=:vote WHERE id=:id";
+			$stmt = $this->db->prepare($req);
+			if ($stmt==true) {
+				$stmt->BindParam(':nbvote', $nbvotes, PDO::PARAM_INT);
+				$stmt->BindParam(':vote', $note, PDO::PARAM_INT);
+				$stmt->BindParam(':id', $id, PDO::PARAM_INT);
+				$res = $stmt->execute();
+			} else {
+				print "Error in addVote while prepare.<br/>";
+				$err = $this->db->errorInfo();
+				var_dump($err);
+				return null;
+			}
+		}
+
 }
 
 

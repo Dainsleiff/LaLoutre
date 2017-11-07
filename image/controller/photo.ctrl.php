@@ -47,9 +47,11 @@
     $this->data['imgIdPrev'] = $this->data['imgPrev']->getId();
     $this->data['imgUrlPrev'] = $this->data['imgNext']->getURL();
 
-    //on initialise le commentaire et la catégorie
+    //on initialise le commentaire et la catégorie + le nombre de vote et la note
     $this->data['imgCommentaire'] = $img->getCommentaire();
     $this->data['imgCategorie'] = $img->getCategorie();
+    $this->data['imgNbVotes'] = $img->getNbVotes();
+    $this->data['imgVotes'] = $img->getVotes();
     //on récupère la catégorie séléctionné si elle existe et on charge la categorieSearch dans l'objet imgDAO
     if(isset($_GET['categorieSearch'])){
       $_SESSION['categorieSearch'] = $_GET['categorieSearch'];
@@ -231,7 +233,18 @@
         break;
 
         case 'vote':
-          $this->data['imgDAO']->addVote($_GET['votes'],$this->data['imgId']);
+          //on met à jour le nombre de vote et la note obtenue par la photo
+          $this->data['imgNbVotes'] = $this->data['imgNbVotes']+1;
+          if ($_GET['votes']) {
+            $this->data['imgVotes'] = $this->data['imgVotes']+1;
+          } else {
+            $this->data['imgVotes'] = $this->data['imgVotes']-1;
+          }
+          $this->data['imgDAO']->addVote($this->data['imgId'], $_GET['votes'], $this->data['imgNbVotes'], $this->data['imgVotes']);
+          self::initTableau();
+          include_once "view/viewPhoto.view.php";
+        break;
+
 
 
 
