@@ -16,8 +16,17 @@
         $this->action = 'default';
       }
 
-      if (isset($_GET['categorieSearch'])) {
+      if (isset($_GET['random']) && $_GET['random'] != '') {
+        $this->data['imgRandom'] = $_GET['random'];
+      } else {
+        $this->data['imgRandom'] = 0;
+      }
+
+      if (isset($_GET['categorieSearch']) && $_GET['categorieSearch'] != '') {
         $this->data['imgCategorie'] = $_GET['categorieSearch'];
+        $this->data['catSize'] = $this->data['imgDAO']->getCatSize($this->data['imgCategorie']);
+      } else {
+        $this->data['catSize'] = $this->data['imgDAO']->getSizeAll();
       }
       if (isset($_GET["imgId"]) && $_GET['imgId'] !='') {
         $this->data['imgId'] = $_GET["imgId"];
@@ -49,17 +58,23 @@
         # sinon débute avec 2 images
         $this->data['nbImg'] = 2;
       }
-      $this->data['nbImgPlus'] = $this->data['nbImg'] *2;
-      $this->data['nbImgMoins'] =$this->data['nbImg'] /2;
-      # Calcul la liste des images à afficher (attention images + imageDAO)
-      $this->data['imgListe']= $this->data['imgDAO']->getImageList($img,$this->data['nbImg']);
-      $temp_images = array();
-      foreach ($this->data['imgListe'] as $imageOrimageDAO) {
-        if(is_a($imageOrimageDAO, 'Image')) {
-          $temp_images[] = $imageOrimageDAO;
-        }
+
+      if ($this->data['nbImg'] < $this->data['catSize']) {
+        $this->data['nbImgPlus'] = $this->data['nbImg'] *2;
+      } else {
+        $this->data['nbImgPlus'] = $this->data['nbImg'];
       }
-      $this->data['imgListe'] = $temp_images;
+      if ($this->data['nbImg'] > 1) {
+        $this->data['nbImgMoins'] = $this->data['nbImg'] /2;
+      } else {
+        $this->data['nbImgMoins'] = 1;
+      }
+      # Calcul la liste des images à afficher (attention images + imageDAO)
+      if ($this->data['imgRandom']) {
+        $this->data['imgListe']= $this->data['imgDAO']->getRandomMatrix($this->data['nbImg']);
+      } else {
+        $this->data['imgListe']= $this->data['imgDAO']->getImageList($img,$this->data['nbImg']);
+      }
       #initialise une taille d'image par défaut lorsque l'on choisit d'afficher une seule image en cliquant sur une image
       $size=480;
 //_______________________________________________________________________________________
@@ -128,13 +143,10 @@
          break;
 
         case 'random':
-             //on sélectionne une image random
-             $img = $this->data['imgDAO']->getRandomImage();
-             $this->data['imgId'] = $img->getId();
-             $this->data['imgUrl'] = $img->getURL();
+             //on sélectionne n images random
              //on initialisele tableau après avoir mis à jour les données
              self::initTableau();
-             include_once "view/viewPhoto.view.php";
+             include_once "view/photoMatrix.view.php";
            break;
 
         case 'more':
@@ -164,6 +176,11 @@
       $this->data['menu']['First']='index.php?controller=photo&action=first&imgId='.$this->data['imgId']."&size=".$this->data['size'].'&categorieSearch='.$this->data['imgCategorie'];
      } else {
       $this->data['menu']['First']='index.php?controller=photo&action=first&imgId='.$this->data['imgId']."&size=".$this->data['size'];
+     }
+     if (isset($_GET['categorieSearch'])) {
+      $this->data['menu']['Random']="index.php?controller=photoMatrix&action=random&random=1&imgId=".$this->data['imgId']."&size=".$this->data['size']."&nbImg=".$this->data['nbImg']."&categorieSearch=".$this->data['imgCategorie'];
+     } else {
+      $this->data['menu']['Random']="index.php?controller=photoMatrix&action=random&random=1&imgId=".$this->data['imgId']."&size=".$this->data['size']."&nbImg=".$this->data['nbImg'];
      }
       if (isset($_GET['categorieSearch'])) {
         $this->data['menu']['More']="index.php?controller=photoMatrix&action=more&imgId=".$this->data['imgId']."&size=".$this->data['size']."&nbImg=".$this->data['nbImgPlus']."&categorieSearch=".$this->data['imgCategorie'];

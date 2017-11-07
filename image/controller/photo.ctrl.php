@@ -245,7 +245,11 @@
      } else {
       $this->data['menu']['First']='index.php?controller=photo&action=first&imgId='.$this->data['imgId']."&size=".$this->data['size'];
      }
-     $this->data['menu']['Random']="index.php?controller=photo&action=random&imgId=".$this->data['imgId']."&size=".$this->data['size'];
+     if (isset($_GET['categorieSearch'])) {
+      $this->data['menu']['Random']="index.php?controller=photo&action=random&imgId=".$this->data['imgId']."&size=".$this->data['size']."&categorieSearch=".$this->data['imgCategorie'];
+     } else {
+      $this->data['menu']['Random']="index.php?controller=photo&action=random&imgId=".$this->data['imgId']."&size=".$this->data['size'];
+     }
      if (isset($_GET['categorieSearch'])) {
       $this->data['menu']['More']="index.php?controller=photoMatrix&action=more&imgId=".$this->data['imgId']."&size=".$this->data['size']."&categorieSearch=".$this->data['imgCategorie'];
      } else {

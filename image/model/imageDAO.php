@@ -118,9 +118,40 @@
 
 		# Retourne une image au hazard
 		function getRandomImage() {
-			$id = rand(1,$this->size());
-			$img = $this->getImage($id);
+			if(isset($this->categorieSearch) && $this->categorieSearch != ''){
+				$req = "SELECT * FROM image WHERE category=:category";
+				$stmt = $this->db->prepare($req);
+				$stmt->BindParam(':category',$this->categorieSearch,PDO::PARAM_STR);
+				$stmt->execute();
+				$result = $stmt->fetchAll(PDO::FETCH_OBJ);
+				$id = $result[rand(0,count($result)-1)]->id;
+				$img = $this->getImage($id, 1);
+			} else {
+				$id = rand(0,$this->size()-1);
+				$img = $this->getImage($id);
+			}
 			return $img;
+		}
+
+		// Retourne une liste d'images au hasard (photo matrix)
+		function getRandomMatrix($nb){
+			if(isset($this->categorieSearch) && $this->categorieSearch != ''){
+				$req = "SELECT * FROM image WHERE category=:category";
+				$stmt = $this->db->prepare($req);
+				$stmt->BindParam(':category',$this->categorieSearch,PDO::PARAM_STR);
+				$stmt->execute();
+				$result = $stmt->fetchAll(PDO::FETCH_OBJ);
+				for ($i=0; $i < $nb; $i++) { 
+					$id = $result[rand(0,count($result)-1)]->id;
+					$res[] = $this->getImage($id, 1);
+				}
+			} else {
+				for ($i=0; $i < $nb; $i++) {
+					$id = rand(0,$this->size()-1);
+					$res[] = $this->getImage($id);
+				}
+			}
+			return $res;
 		}
 
 		# Retourne l'objet de la premiere image
@@ -151,7 +182,7 @@
 		# Retourne l'image précédente d'une image
 		function getPrevImage($id) {
 			if (isset($this->categorieSearch) && $this->categorieSearch != '') {
-				$req = "SELECT * FROM image WHERE category=:category AND id>:id";
+				$req = "SELECT * FROM image WHERE category=:category AND id<:id ORDER BY id DESC";
 				$stmt = $this->db->prepare($req);
 				$stmt->BindParam(':category',$this->categorieSearch,PDO::PARAM_STR);
 				$stmt->BindParam(':id',$id,PDO::PARAM_INT);
@@ -214,17 +245,26 @@
 		# Retourne la liste des images consécutives à partir d'une image
 		function getImageList(image $img,$nb) {
 			# Verifie que le nombre d'image est non nul
-			if (!$nb > 0) {
-				debug_print_backtrace();
-				trigger_error("Erreur dans ImageDAO.getImageList: nombre d'images nul");
+			if ($nb < 1) {
+				$nb = 1;
 			}
 			$id = $img->getId();
 			$max = $id+$nb;
 			if (isset($this->categorieSearch) && $this->categorieSearch != '') {
-				while ($img->getCategorie() == $this->categorieSearch && $id < $max) {
-					$res[] = $this->getImage($id, 1);
-					$id++;
+				$req = "SELECT * FROM image WHERE category=:category AND id>=:id";
+				$stmt = $this->db->prepare($req);
+				$stmt->BindParam(':category',$this->categorieSearch,PDO::PARAM_STR);
+				$stmt->BindParam(':id',$id,PDO::PARAM_INT);
+				$stmt->execute();
+				$result = $stmt->fetchAll(PDO::FETCH_OBJ);
+				$result = array_slice($result, 0, $nb);
+				for ($i=0; $i < $nb; $i++) {
+					if (!isset($result[$i])) {
+						break;
+					}
+					$res[] = new Image(self::urlPath.'/'.$result[$i]->path,$result[$i]->id,$result[$i]->category,$result[$i]->comment);
 				}
+
 			} else {
 				while ($id < $this->size() && $id < $max) {
 					$res[] = $this->getImage($id);
@@ -232,6 +272,40 @@
 				}
 			}
 			return $res;
+		}
+
+		//Retourne le nombre de photos contenues dans une catégorie
+		function getCatSize($cat){
+			$req = "SELECT count(id) FROM image WHERE category=:category";
+			$stmt =$this->db->prepare($req);
+			if($stmt == true){
+				$stmt->BindParam(':category',$cat,PDO::PARAM_STR);
+				$stmt->execute();
+				$result = $stmt->fetchColumn();
+			}
+			else{
+				print "Error in getCatSize <br/>";
+				$err = $this->db->errorInfo();
+				var_dump($err);
+				$result = null;
+			}
+			return $result;
+		}
+
+		function getSizeAll(){
+			$req = "SELECT count(id) FROM image";
+			$stmt =$this->db->prepare($req);
+			if($stmt == true){
+				$stmt->execute();
+				$result = $stmt->fetchColumn();
+			}
+			else{
+				print "Error in getCatSize <br/>";
+				$err = $this->db->errorInfo();
+				var_dump($err);
+				$result = null;
+			}
+			return $result;
 		}
 
 		//fonction pour afficher l'ensemble des catégories existantes en base
