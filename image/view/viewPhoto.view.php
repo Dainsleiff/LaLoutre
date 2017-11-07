@@ -69,9 +69,31 @@
 
 				// Réalise l'affichage de l'image
 				print "<img src=\"".$this->data['imgUrl']."\" width=\"".$this->data['size']."\">\n";
-				print $this->data['imgUrl'];
 				print "</a>\n";
 				?>
+
+				<form class="no-border no-background" action="index.php">
+					<legend>Aimez vous cette photo ?</legend>
+					<input type="radio" name="votes" id="voteOui" value="1">
+					<label for="voteOui">Oui</label>
+					<input type="radio" name="votes" id="voteNon" value="0">
+					<label for="voteNon">Non</label>
+					<input type="hidden" name="controller" value="photo">
+					<input type="hidden" name="action" value="vote">
+					<input type="submit" name="submit" value="Envoyer le vote">
+				</form>
+				<table>
+					<tr>
+						<th>Nombre de votes</th>
+						<th>Note</th>
+					</tr>
+					<tr>
+						<td><?php echo $this->data['imgNbVotes'] ?></td>
+						<td><?php echo $this->data['imgVotes'] ?></td>
+					</tr>
+				</table>
+					
+				</form>
 
 				<!-- Affichage et modification du commentaire -->
 				<form class="no-border no-background" action="index.php" method="get">
@@ -84,10 +106,6 @@
 					<input type="hidden" name="action" value="changeData">
 					<input type="submit" name='submit' value='Changer les infos'>
 				</form>
-
-
-
-
 			</div>
 
 		<div id="pied_de_page">

@@ -65,6 +65,7 @@
 		}
 
 		# Retourne un objet image correspondant à l'identifiant
+		/* param : $imgId, l'identifiant d'une image */
 		function getImagev1($imgId) {
 			# Verifie que cet identifiant est correct
 			if(!($imgId >=1 and  $imgId <=$this->size())) {
@@ -76,22 +77,28 @@
 			return new Image(self::urlPath.$this->try[$imgId-1],$imgId);;
 		}
 
+		# Retourne une image selon plusieurs critères
+		/* param : $id l'identifiant d'une image
+					$strict (1 ou 0) permet d'indiquer si le $id doit forcément être pris en compte dans la requête, même si la category est renseignée */
 		function getImage($id = 1, $strict = 0){
 			$req = 'SELECT * FROM image WHERE id=:id';
-			//si une catégorie est recherchée on l'ajoute à la rechercher
+			//si une catégorie est recherchée, la recherche sur fait sur la categorie sans tenir compte de l'id
 			if(isset($this->categorieSearch) && $this->categorieSearch != ''){
 				$req = "SELECT * FROM image WHERE category=:category";
 				if ($strict) {
+					// si strict vaut 1, on force la recherche sur la catégorie ET sur l'id
 					$req .= " AND id=:id";
 				}
 			}
 			$stmt =$this->db->prepare($req);
+			//Recherche classique, prend l'id passé en paramètre
 			if($stmt == true && ! (isset($this->categorieSearch) && $this->categorieSearch != '')){
 				$stmt->BindParam(':id',$id,PDO::PARAM_INT);
 				$stmt->execute();
 				$result = $stmt->fetchAll(PDO::FETCH_OBJ);
 				$result = $result[0];
 				$imgReturned = new Image(self::urlPath.'/'.$result->path,$result->id,$result->category,$result->comment);
+				//Recherche avec une catégorie renseignée
 			} elseif ($stmt == true && isset($this->categorieSearch) && $this->categorieSearch != '') {
 				$stmt->BindParam(':category', $this->categorieSearch, PDO::PARAM_STR);
 				if ($strict) {
@@ -100,9 +107,11 @@
 				$stmt->execute();
 				$result = $stmt->fetchAll(PDO::FETCH_OBJ);
 				if ($result) {
+					// $result un tableau de résultat. On prend le premier pour retourner une image.
 					$result = $result[0];
 					$imgReturned = new Image(self::urlPath.'/'.$result->path,$result->id,$result->category,$result->comment);
 				} else {
+					// si pas de résultat de requête, on recharge la même image
 					$imgReturned = $this;
 				}
 			}
@@ -116,37 +125,45 @@
 			return $imgReturned;
 		}
 
-		# Retourne une image au hazard
+		# Retourne une image au hasard (photoView)
 		function getRandomImage() {
 			if(isset($this->categorieSearch) && $this->categorieSearch != ''){
+				// si la catégorie est renseignée, on fait une requête sur la catégorie
 				$req = "SELECT * FROM image WHERE category=:category";
 				$stmt = $this->db->prepare($req);
 				$stmt->BindParam(':category',$this->categorieSearch,PDO::PARAM_STR);
 				$stmt->execute();
 				$result = $stmt->fetchAll(PDO::FETCH_OBJ);
+				// on récupère toutes les catégories, puis on prend un id au hasard parmi les objets stockés dans $result
 				$id = $result[rand(0,count($result)-1)]->id;
+				//On créé l'image avec l'id random
 				$img = $this->getImage($id, 1);
 			} else {
+				// sans catégorie, on prend un id compris entre 1 et l'id max de la table
 				$id = rand(0,$this->size()-1);
 				$img = $this->getImage($id);
 			}
 			return $img;
 		}
 
-		// Retourne une liste d'images au hasard (photo matrix)
+		# Retourne une liste d'images au hasard (photo matrix)
+		/* param : $nb le nombre de photos à afficher */
 		function getRandomMatrix($nb){
 			if(isset($this->categorieSearch) && $this->categorieSearch != ''){
 				$req = "SELECT * FROM image WHERE category=:category";
+				// si la catégorie est renseignée, on fait une requête sur la catégorie
 				$stmt = $this->db->prepare($req);
 				$stmt->BindParam(':category',$this->categorieSearch,PDO::PARAM_STR);
 				$stmt->execute();
 				$result = $stmt->fetchAll(PDO::FETCH_OBJ);
-				for ($i=0; $i < $nb; $i++) { 
+				for ($i=0; $i < $nb; $i++) {
+					// On sélectionne $nb id en retournant un id au hasard du tableau de résultat et on créé $nb images
 					$id = $result[rand(0,count($result)-1)]->id;
 					$res[] = $this->getImage($id, 1);
 				}
 			} else {
 				for ($i=0; $i < $nb; $i++) {
+					// On sélectionne $nb id au hasard et on créé $nb images
 					$id = rand(0,$this->size()-1);
 					$res[] = $this->getImage($id);
 				}
@@ -160,20 +177,24 @@
 		}
 
 		# Retourne l'image suivante d'une image
+		/* param : $id l'identifiant de la photo courante */
 		function getNextImage($id) {
 			if (isset($this->categorieSearch) && $this->categorieSearch != '') {
 				$req = "SELECT * FROM image WHERE category=:category AND id>:id";
+				// On prend toutes les photos de la catégorie dont l'id est supérieur à l'id de la photo courante
 				$stmt = $this->db->prepare($req);
 				$stmt->BindParam(':category',$this->categorieSearch,PDO::PARAM_STR);
 				$stmt->BindParam(':id',$id,PDO::PARAM_INT);
 				$stmt->execute();
 				$result = $stmt->fetchAll(PDO::FETCH_OBJ);
 				if ($result == null) {
+					// Si pas de résultats, on retourne la première image de la catégorie
 					$img = $this->getImage();
 				} else {
 					$img = $this->getImage($result[0]->id, 1);
 				}
 			} elseif ($id < $this->size()) {
+				// Si l'id est bien inférieur au max des id, on créé l'image avec l'id courant +1
 				$img = $this->getImage($id+1);
 			}
 			return $img;
@@ -327,13 +348,12 @@
 
 		//fonction pour changer le commentaire d'une image
 		function changeComment($comment,$id){
-			$req = 'UPDATE image SET comment =:comment WHERE id=:id';
+			$req = 'UPDATE image SET comment=:comment WHERE id=:id';
 			$stmt =$this->db->prepare($req);
 			if($stmt == true){
-				$res =$stmt->execute(array(':comment'=>$comment,':id'=>$id));
-				if($res == false){
-					var_dump($res);
-				}
+				$stmt->BindParam(':comment', $comment, PDO::PARAM_STR);
+				$stmt->BindParam(':id', $id, PDO::PARAM_INT);
+				$stmt->execute();
 			}
 			else {
 				print "Error in changeComment while prepare.<br/>";
@@ -344,14 +364,12 @@
 
 		//fonction pour changer la catégorie d'une image
 		function changeCategory($category,$id){
-			$req = 'UPDATE image SET category = :category WHERE id=:id';
+			$req = 'UPDATE image SET category=:category WHERE id=:id';
 			$stmt =$this->db->prepare($req);
 			if($stmt == true){
-				var_dump($category);
-				var_dump($id);
 				$stmt->BindParam(':category',$category,PDO::PARAM_STR);
 				$stmt->BindParam(':id',$id,PDO::PARAM_INT);
-				$res =$stmt->execute();
+				$stmt->execute();
 			}
 			else {
 				print "Error in changeCategory while prepare.<br/>";

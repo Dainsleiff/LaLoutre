@@ -162,10 +162,9 @@
         case 'changeData':
             //on change le commentaire et/ou la catégorie
             //on appele la methode du DAO pour changer la categorie
-            var_dump($_GET);
             $this->data['imgCommentaire'] = $_GET['commentaire'];
             $this->data['imgCategorie'] = $_GET['categorie'];
-            $this->data['imgDAO']->changeCategory($_GET['categorie'],$this->data['imgId']);
+            $res = $this->data['imgDAO']->changeCategory($_GET['categorie'],$this->data['imgId']);
             $this->data['imgDAO']->changeComment($_GET['commentaire'],$this->data['imgId']);
             self::initTableau();
             include_once "view/viewPhoto.view.php";
@@ -230,6 +229,12 @@
             include_once 'view/addPhoto.view.php';
           }
         break;
+
+        case 'vote':
+          $this->data['imgDAO']->addVote($_GET['votes'],$this->data['imgId']);
+
+
+
        default:
        include_once 'view/home.view.php';
        break;
