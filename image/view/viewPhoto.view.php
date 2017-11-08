@@ -72,7 +72,7 @@
 				print "</a>\n";
 				?>
 
-				<form class="no-border no-background" action="index.php">
+				<form class="no-border no-background" action="index.php" method="get">
 					<legend>Aimez vous cette photo ?</legend>
 					<input type="radio" name="votes" id="voteOui" value="1">
 					<label for="voteOui">Oui</label>
@@ -80,6 +80,8 @@
 					<label for="voteNon">Non</label>
 					<input type="hidden" name="controller" value="photo">
 					<input type="hidden" name="action" value="vote">
+					<input type="hidden" name="nbvote" value="<?php echo $this->data['imgNbVotes'] ?>">
+					<input type='hidden' name='imgId' value="<?php echo $this->data['imgId'];?>">
 					<input type="submit" name="submit" value="Envoyer le vote">
 				</form>
 				<table>

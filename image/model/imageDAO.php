@@ -101,7 +101,7 @@
 				if($result && $result->local == true){
 						$result->path = self::urlPath.'/'.$result->path;
 				}
-				$imgReturned = new Image($result->path,$result->id,$result->category,$result->comment);
+				$imgReturned = new Image($result->path,$result->id,$result->category,$result->comment, $result->nbvote, $result->vote);
 				//Recherche avec une catégorie renseignée
 			} elseif ($stmt == true && isset($this->categorieSearch) && $this->categorieSearch != '') {
 				$stmt->BindParam(':category', $this->categorieSearch, PDO::PARAM_STR);
@@ -116,7 +116,7 @@
 					if($result && $result->local == true){
 							$result->path = self::urlPath.'/'.$result->path;
 					}
-					$imgReturned = new Image($result->path,$result->id,$result->category,$result->comment);
+					$imgReturned = new Image($result->path,$result->id,$result->category,$result->comment, $result->nbvote, $result->vote);
 				} else {
 					// si pas de résultat de requête, on recharge la même image
 					$imgReturned = $this;
@@ -290,7 +290,7 @@
 					if (!isset($result[$i])) {
 						break;
 					}
-					$res[] = new Image(self::urlPath.'/'.$result[$i]->path,$result[$i]->id,$result[$i]->category,$result[$i]->comment);
+					$res[] = new Image(self::urlPath.'/'.$result[$i]->path,$result[$i]->id,$result[$i]->category,$result[$i]->comment, $result[$i]->nbvote, $result[$i]->vote);
 				}
 
 			} else {
@@ -405,12 +405,12 @@
 			}
 		}
 
-		function addVote($id, $votes, $nbvotes, $note){
+		function addVote($id, $nbvotes, $vote){
 			$req = "UPDATE image SET nbvote=:nbvote, vote=:vote WHERE id=:id";
 			$stmt = $this->db->prepare($req);
 			if ($stmt==true) {
 				$stmt->BindParam(':nbvote', $nbvotes, PDO::PARAM_INT);
-				$stmt->BindParam(':vote', $note, PDO::PARAM_INT);
+				$stmt->BindParam(':vote', $vote, PDO::PARAM_INT);
 				$stmt->BindParam(':id', $id, PDO::PARAM_INT);
 				$res = $stmt->execute();
 			} else {

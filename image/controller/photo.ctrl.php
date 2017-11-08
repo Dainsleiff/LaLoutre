@@ -195,9 +195,7 @@
             //si on upload une image via url
             if(isset($_POST['url'])){
               $this->data['urlImgBDD'] = $_POST['url'];
-              var_dump($this->data['urlImgBDD']);
               $res = $this->data['imgDAO']->addImg($this->data['urlImgBDD'],$this->data['categorie'],$this->data['commentaire'],'false');
-              var_dump('LOOOOOOOOL');
               if($res){
                 $this->data['resultAdd'] = "Le fichier est valide, et a été téléchargé
                 avec succès.\n";
@@ -239,13 +237,18 @@
 
         case 'vote':
           //on met à jour le nombre de vote et la note obtenue par la photo
-          $this->data['imgNbVotes'] = $this->data['imgNbVotes']+1;
-          if ($_GET['votes']) {
+          if (isset($_GET['nbvote'])) {
+            $this->data['imgNbVotes'] = $_GET['nbvote']+1;
+          }
+          //si vote positif
+          if (isset($_GET['votes']) && $_GET['votes']==1) {
             $this->data['imgVotes'] = $this->data['imgVotes']+1;
-          } else {
+          } 
+          //si vote negatif
+          elseif (isset($_GET['votes']) && $_GET['votes']==0) {
             $this->data['imgVotes'] = $this->data['imgVotes']-1;
           }
-          $this->data['imgDAO']->addVote($this->data['imgId'], $_GET['votes'], $this->data['imgNbVotes'], $this->data['imgVotes']);
+          $this->data['imgDAO']->addVote($this->data['imgId'], $this->data['imgNbVotes'], $this->data['imgVotes']);
           self::initTableau();
           include_once "view/viewPhoto.view.php";
         break;
