@@ -9,7 +9,7 @@
 		# Chemin LOCAL où se trouvent les images
 		private $path="model/IMG";
 		# Chemin URL où se trouvent les images
-		const urlPath="http://localhost/sites/php/LaLoutre/image/model/IMG";
+		const urlPath="./model/IMG";
 		# Tableau pour stocker tous les chemins des images
 		private $imgEntry;
 		private $size = null;
@@ -91,6 +91,8 @@
 				}
 			}
 			$stmt =$this->db->prepare($req);
+
+
 			//Recherche classique, prend l'id passé en paramètre
 			if($stmt == true && ! (isset($this->categorieSearch) && $this->categorieSearch != '')){
 				$stmt->BindParam(':id',$id,PDO::PARAM_INT);
@@ -98,10 +100,13 @@
 				$result = $stmt->fetchAll(PDO::FETCH_OBJ);
 				$result = $result[0];
 				//changement de l'url si url local
-				if($result && $result->local == true){
+				if($result && $result->local == 'true'){
 						$result->path = self::urlPath.'/'.$result->path;
 				}
+				var_dump($result);
 				$imgReturned = new Image($result->path,$result->id,$result->category,$result->comment, $result->nbvote, $result->vote);
+
+
 				//Recherche avec une catégorie renseignée
 			} elseif ($stmt == true && isset($this->categorieSearch) && $this->categorieSearch != '') {
 				$stmt->BindParam(':category', $this->categorieSearch, PDO::PARAM_STR);
@@ -113,7 +118,7 @@
 				if ($result) {
 					// $result un tableau de résultat. On prend le premier pour retourner une image.
 					$result = $result[0];
-					if($result && $result->local == true){
+					if($result && $result->local == 'true'){
 							$result->path = self::urlPath.'/'.$result->path;
 					}
 					$imgReturned = new Image($result->path,$result->id,$result->category,$result->comment, $result->nbvote, $result->vote);
