@@ -79,7 +79,6 @@
      }
    }
 
-
    function __construct() {
      $this->data['imgDAO'] = new ImageDAO();
      //récupération
@@ -108,13 +107,14 @@
        break;
 
        case 'first':
+       //on récupère l'état courant
+       self::initDataSize();
+       self::initDataCategorieSearch();
        $this->data['img'] = $this->data['imgDAO']->getFirstImage();
        $this->data['imgId'] = $this->data['img']->getId();
        $this->data['imgUrl'] = $this->data['img']->getURL();
        $this->data['imgCommentaire'] = $this->data['img']->getCommentaire();
        $this->data['imgCategorie'] = $this->data['img']->getCategorie();
-       self::initDataCategorieSearch();
-       self::initDataSize();
        self::initDataCategorieCommentaireVote();
        self::initTableau();
        include_once "view/viewPhoto.view.php";
@@ -122,6 +122,7 @@
 
        case 'catPhoto':
        self::initDataSize();
+       self::initDataCategorieSearch();
        $this->data['img'] = $this->data['imgDAO']->getImage();
        $this->data['imgId'] = $this->data['img']->getId();
        $this->data['imgUrl'] = $this->data['img']->getURL();
@@ -153,16 +154,22 @@
         break;
 
       case 'nextOfCat':
-        $img = $this->data['imgDAO']->getNextImage($this->data['imgId']);
-        $this->data['imgId'] = $img->getId();
-        $this->data['imgUrl'] = $img->getURL();
-        $this->data['imgCommentaire'] = $img->getCommentaire();
-        $this->data['imgCategorie'] = $img->getCategorie();
+        self::initDataStart();
+        self::initDataCategorieSearch();
+        self::initDataSize();
+        $this->data['img'] = $this->data['imgDAO']->getNextImage($this->data['imgId']);
+        $this->data['imgId'] = $this->data['img']->getId();
+        $this->data['imgUrl'] = $this->data['img']->getURL();
+        $this->data['imgCommentaire'] = $this->data['img']->getCommentaire();
+        $this->data['imgCategorie'] = $this->data['img']->getCategorie();
         self::initTableau();
         include_once "view/viewPhoto.view.php";
         break;
 
       case 'prevOfCat':
+        self::initDataStart();
+        self::initDataCategorieSearch();
+        self::initDataSize();
         $img = $this->data['imgDAO']->getPrevImage($this->data['imgId']);
         $this->data['imgId'] = $img->getId();
         $this->data['imgUrl'] = $img->getURL();
@@ -197,6 +204,7 @@
       case 'random':
           //on récupère l'état courant de l'image
           self::initDataSize();
+          self::initDataCategorieSearch();
           //on sélectionne une image random
           $this->data['img'] = $this->data['imgDAO']->getRandomImage();
           $this->data['imgId'] = $this->data['img']->getId();
@@ -227,6 +235,9 @@
         //fonction d'ajout d'image
         self::initDataStart();
         self::initDataSize();
+        if(isset($_REQUEST['submit'])){
+          $this->data['submit'] = $_REQUEST['submit'];
+        }
         self::initTableau();
         unset($this->data['menu']['Zoom -']);
         unset($this->data['menu']['Zoom +']);
