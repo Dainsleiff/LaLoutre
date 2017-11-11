@@ -26,10 +26,9 @@
 				<!-- Champs de recherche des catégories -->
 				<form action="index.php" method="GET">
 	 			Recherche par catégorie:<br>
-	 			<input type="text" name="categorieSearch" list="categories" value="<?php echo $_SESSION['categorieSearch'];?>"><br>
+	 			<input type="text" name="categorieSearch" list="categories" value="<?php echo $this->data['categorieSearch'];?>"><br>
 				<datalist id="categories">
-					<?php foreach ($this->data['imgDAO']->getAllCategories() as $categorie) {
-
+					<?php foreach ($this->data['ListCategories'] as $categorie) {
 						print "<option value=\"".$categorie->category."\">";
 					};
 					?>
@@ -47,16 +46,16 @@
 			<?php # mise en place de la vue partielle : le contenu central de la page
 				# Mise en place des deux boutons
 				print "<p>\n";
-				if (isset($_GET['categorieSearch'])) {
+				if (isset($this->data['imgCategorie'])) {
 					// pre-calcul de la page d'images précedente
-					print "<a href=\"index.php?controller=photoMatrix&action=prev&imgId=".$this->data['imgIdPrev']."&nbImg=".$this->data['nbImg']."&categorieSearch=".$this->data['imgCategorie']."\">Prev</a> "; //ICIIIIII
+					print "<a href=\"index.php?controller=photoMatrix&action=prev&imgId=".$this->data['imgId']."&nbImg=".$this->data['nbImg']."&categorieSearch=".$this->data['imgCategorie']."\">Prev</a> "; //ICIIIIII
 					// pre-calcul de la page d'images suivante
-					print "<a href=\"index.php?controller=photoMatrix&action=next&imgId=".$this->data['imgIdNext']."&nbImg=".$this->data['nbImg']."&categorieSearch=".$this->data['imgCategorie']."\">Next</a> "; //ICIIIIII
+					print "<a href=\"index.php?controller=photoMatrix&action=next&imgId=".$this->data['imgId']."&nbImg=".$this->data['nbImg']."&categorieSearch=".$this->data['imgCategorie']."\">Next</a> "; //ICIIIIII
 				} else {
 					// pre-calcul de la page d'images précedente
-					print "<a href=\"index.php?controller=photoMatrix&action=prev&imgId=".$this->data['imgIdPrev']."&nbImg=".$this->data['nbImg']."\">Prev</a> "; //ICIIIIII
+					print "<a href=\"index.php?controller=photoMatrix&action=prev&imgId=".$this->data['imgId']."&nbImg=".$this->data['nbImg']."\">Prev</a> "; //ICIIIIII
 					// pre-calcul de la page d'images suivante
-					print "<a href=\"index.php?controller=photoMatrix&action=next&imgId=".$this->data['imgIdNext']."&nbImg=".$this->data['nbImg']."\">Next</a> "; //ICIIIIII
+					print "<a href=\"index.php?controller=photoMatrix&action=next&imgId=".$this->data['imgId']."&nbImg=".$this->data['nbImg']."\">Next</a> "; //ICIIIIII
 				}
 				print "</p>\n";
 				# Affiche de la matrice d'image avec une reaction au click
@@ -67,7 +66,7 @@
 					print "<a href=\"".$i[1]."\"><img src=\"".$i[0]."\" width=\"".$this->data['size']."\" height=\"".$this->data['size']."\"></a>\n";
 				};
 				?>
-				
+
 			</div>
 
 		<div id="pied_de_page">
