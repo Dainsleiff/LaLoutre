@@ -8,6 +8,77 @@
    private $data = null;
 
 
+   function initDataSize(){
+     // Regarde si une taille pour l'image est connue
+     if (isset($_GET["size"]) && $_GET["size"]!='') {
+       $this->data['size'] = $_GET["size"];
+     } else {
+       # sinon place une valeur de taille par défaut
+       $this->data['size'] = 480;
+     }
+   }
+
+   function initDataCategorieCommentaireVote(){
+     //on initialise le commentaire et la catégorie + le nombre de vote et la note
+     $this->data['imgCommentaire'] = $this->data['img']->getCommentaire();
+     $this->data['imgCategorie'] = $this->data['img']->getCategorie();
+     $this->data['imgNbVotes'] = $this->data['img']->getNbVotes();
+     $this->data['imgVotes'] = $this->data['img']->getVotes();
+   }
+
+   function initDataStart(){
+     if (isset($_GET["imgId"]) && $_GET['imgId'] !='') {
+       $this->data['imgId'] = $_GET["imgId"];
+       $this->data['img'] = $this->data['imgDAO']->getImage($this->data['imgId']);
+       $this->data['imgUrl'] = $this->data['img']->getURL();
+       $this->data['imgCommentaire'] = $this->data['img']->getCommentaire();
+     } else {
+       // Pas d'image, se positionne sur la première
+       $this->data['img'] = $this->data['imgDAO']->getFirstImage();
+       // Conserve son id pour définir l'état de l'interface
+       $this->data['imgId'] = $this->data['img']->getId();
+       $this->data['imgUrl'] = $this->data['img']->getURL();
+       $this->data['imgCommentaire'] = $this->data['img']->getCommentaire();
+     }
+
+     //on initialise le commentaire et la catégorie + le nombre de vote et la note
+     self::initDataCategorieCommentaireVote();
+   }
+
+   function initDataNextImg(){
+     //on initialise les images adjacentes (next/prev)
+     $this->data['previousImgId'] = $_GET['imgId'];
+     $img = $this->data['imgDAO']->getImage($this->data['previousImgId']);
+     $this->data['img'] = $this->data['imgDAO']->getNextImage($img->getId());
+     $this->data['imgId'] = $this->data['img']->getId();
+     $this->data['imgUrl'] = $this->data['img']->getURL();
+   }
+
+   function initDataPrevImg(){
+         //on initialise les images adjacentes (next/prev)
+         $this->data['previousImgId'] = $_GET['imgId'];
+         $img = $this->data['imgDAO']->getImage($this->data['previousImgId']);
+         $this->data['img'] = $this->data['imgDAO']->getPrevImage($img->getId());
+         $this->data['imgId'] = $this->data['img']->getId();
+         $this->data['imgUrl'] = $this->data['img']->getURL();
+   }
+
+   function initDataCategorieSearch(){
+     //on récupère la catégorie séléctionné si elle existe et on charge la categorieSearch dans l'objet imgDAO
+     if(isset($_GET['categorieSearch'])){
+       $_SESSION['categorieSearch'] = $_GET['categorieSearch'];
+       $this->data['imgDAO']->setCategorieSearch($_SESSION['categorieSearch']);
+     }
+     else{
+       if(!isset($_SESSION['categorieSearch'])){
+         $_SESSION['categorieSearch'] = '';
+       }
+     }
+     if(isset($_REQUEST['submit'])){
+       $this->data['submit'] = $_REQUEST['submit'];
+     }
+   }
+
 
    function __construct() {
      $this->data['imgDAO'] = new ImageDAO();
@@ -18,53 +89,6 @@
      else {
        $this->action = 'default';
      }
-     if (isset($_GET["imgId"]) && $_GET['imgId'] !='') {
-       $this->data['imgId'] = $_GET["imgId"];
-       $img = $this->data['imgDAO']->getImage($this->data['imgId']);
-       $this->data['imgUrl'] = $img->getURL();
-       $this->data['imgCommentaire'] = $img->getCommentaire();
-     } else {
-       // Pas d'image, se positionne sur la première
-       $img = $this->data['imgDAO']->getFirstImage();
-       // Conserve son id pour définir l'état de l'interface
-       $this->data['imgId'] = $img->getId();
-       $this->data['imgUrl'] = $img->getURL();
-       $this->data['imgCommentaire'] = $img->getCommentaire();
-     }
-
-     // Regarde si une taille pour l'image est connue
-     if (isset($_GET["size"]) && $_GET["size"]!='') {
-       $this->data['size'] = $_GET["size"];
-     } else {
-       # sinon place une valeur de taille par défaut
-       $this->data['size'] = 480;
-     }
-    //on initialise les images adjacentes (next/prev)
-    $this->data['imgNext'] = $this->data['imgDAO']->getNextImage($img->getId());
-    $this->data['imgIdNext'] = $this->data['imgNext']->getId();
-    $this->data['imgUrlNext'] = $this->data['imgNext']->getURL();
-    $this->data['imgPrev'] = $this->data['imgDAO']->getPrevImage($img->getId());
-    $this->data['imgIdPrev'] = $this->data['imgPrev']->getId();
-    $this->data['imgUrlPrev'] = $this->data['imgNext']->getURL();
-
-    //on initialise le commentaire et la catégorie + le nombre de vote et la note
-    $this->data['imgCommentaire'] = $img->getCommentaire();
-    $this->data['imgCategorie'] = $img->getCategorie();
-    $this->data['imgNbVotes'] = $img->getNbVotes();
-    $this->data['imgVotes'] = $img->getVotes();
-    //on récupère la catégorie séléctionné si elle existe et on charge la categorieSearch dans l'objet imgDAO
-    if(isset($_GET['categorieSearch'])){
-      $_SESSION['categorieSearch'] = $_GET['categorieSearch'];
-      $this->data['imgDAO']->setCategorieSearch($_SESSION['categorieSearch']);
-    }
-    else{
-      if(!isset($_SESSION['categorieSearch'])){
-        $_SESSION['categorieSearch'] = '';
-      }
-    }
-    if(isset($_REQUEST['submit'])){
-      $this->data['submit'] = $_REQUEST['submit'];
-    }
    }
 
 
@@ -74,6 +98,9 @@
      switch ($this->action) {
 
        case 'viewPhoto':
+        self::initDataStart();
+        self::initDataSize();
+        self::initDataCategorieSearch();
        $firstImg = $this->data['imgDAO']->getFirstImage();
        $this->data['ImgIdFirst'] = $firstImg->getId();
        self::initTableau();
@@ -81,34 +108,46 @@
        break;
 
        case 'first':
-       $firstImg = $this->data['imgDAO']->getFirstImage();
-       $this->data['imgId'] = $firstImg->getId();
-       $this->data['imgUrl'] = $firstImg->getURL();
-       $this->data['imgCommentaire'] = $firstImg->getCommentaire();
-       $this->data['imgCategorie'] = $firstImg->getCategorie();
+       $this->data['img'] = $this->data['imgDAO']->getFirstImage();
+       $this->data['imgId'] = $this->data['img']->getId();
+       $this->data['imgUrl'] = $this->data['img']->getURL();
+       $this->data['imgCommentaire'] = $this->data['img']->getCommentaire();
+       $this->data['imgCategorie'] = $this->data['img']->getCategorie();
+       self::initDataCategorieSearch();
+       self::initDataSize();
+       self::initDataCategorieCommentaireVote();
        self::initTableau();
        include_once "view/viewPhoto.view.php";
        break;
 
        case 'catPhoto':
-       $img = $this->data['imgDAO']->getImage();
-       $this->data['imgId'] = $img->getId();
-       $this->data['imgUrl'] = $img->getURL();
-       $this->data['imgCommentaire'] = $img->getCommentaire();
-       $this->data['imgCategorie'] = $img->getCategorie();
+       self::initDataSize();
+       $this->data['img'] = $this->data['imgDAO']->getImage();
+       $this->data['imgId'] = $this->data['img']->getId();
+       $this->data['imgUrl'] = $this->data['img']->getURL();
+       $this->data['imgCommentaire'] = $this->data['img']->getCommentaire();
+       $this->data['imgCategorie'] = $this->data['img']->getCategorie();
+       self::initDataCategorieCommentaireVote();
        self::initTableau();
        include_once "view/viewPhoto.view.php";
        break;
 
        case 'prev':
-        //pas besoin de beaucoup de traitement car l'image précédente est initialisée dans le constructeur.
+        //on initialise le changement des données
+        self::initDataPrevImg();
+        self::initDataSize();
+        self::initDataCategorieCommentaireVote();
         //on initialisele tableau après avoir mis à jour les données
         self::initTableau();
          include_once "view/viewPhoto.view.php";
          break;
 
       case 'next':
-        //pas besoin de beaucoup de traitement car l'image suivante est initialisée dans le constructeur.
+      //on initialise le changement des données (img,imgid,imgurl pour l'image suivante)
+        self::initDataNextImg();
+        self::initDataSize();
+        self::initDataCategorieCommentaireVote();
+        //on initialise le menu après avoir mis à jour les données
         self::initTableau();
         include_once "view/viewPhoto.view.php";
         break;
@@ -134,35 +173,47 @@
         break;
 
       case 'zoomPlus':
-        //on augmente la taille
+        self::initDataStart();
+        self::initDataSize();
         $this->data['size'] = $this->data['size'] * 1.25;
+        self::initDataCategorieCommentaireVote();
         //on initialisele tableau après avoir mis à jour les données
         self::initTableau();
         include_once "view/viewPhoto.view.php";
         break;
 
       case 'zoomMoins':
-        //on diminue la taille
+        //on récupère l'état courant de l'image
+        self::initDataStart();
+        self::initDataSize();
+        //on change la taille
         $this->data['size'] = $this->data['size'] * 0.75;
-        //on initialisele tableau après avoir mis à jour les données
+        self::initDataCategorieCommentaireVote();
+        //on initialise le tableau après avoir mis à jour les données
         self::initTableau();
         include_once "view/viewPhoto.view.php";
         break;
 
-        case 'random':
-            //on sélectionne une image random
-            $img = $this->data['imgDAO']->getRandomImage();
-            $this->data['imgId'] = $img->getId();
-            $this->data['imgUrl'] = $img->getURL();
-            $this->data['imgCommentaire'] = $img->getCommentaire();
-            $this->data['imgCategorie'] = $img->getCategorie();
-            //on initialisele tableau après avoir mis à jour les données
-            self::initTableau();
-            include_once "view/viewPhoto.view.php";
-          break;
+      case 'random':
+          //on récupère l'état courant de l'image
+          self::initDataSize();
+          //on sélectionne une image random
+          $this->data['img'] = $this->data['imgDAO']->getRandomImage();
+          $this->data['imgId'] = $this->data['img']->getId();
+          $this->data['imgUrl'] = $this->data['img']->getURL();
+          $this->data['imgCommentaire'] = $this->data['img']->getCommentaire();
+          $this->data['imgCategorie'] = $this->data['img']->getCategorie();
+
+          self::initDataCategorieCommentaireVote();
+          //on initialisele tableau après avoir mis à jour les données
+          self::initTableau();
+          include_once "view/viewPhoto.view.php";
+        break;
 
         case 'changeData':
             //on change le commentaire et/ou la catégorie
+            self::initDataStart();
+            self::initDataSize();
             //on appele la methode du DAO pour changer la categorie
             $this->data['imgCommentaire'] = $_GET['commentaire'];
             $this->data['imgCategorie'] = $_GET['categorie'];
@@ -174,7 +225,13 @@
 
         case 'addImg' :
         //fonction d'ajout d'image
-          self::initTableau();
+        self::initDataStart();
+        self::initDataSize();
+        self::initTableau();
+        unset($this->data['menu']['Zoom -']);
+        unset($this->data['menu']['Zoom +']);
+        unset($this->data['menu']['Ajouter une image']);
+        unset($this->data['menu']['More']);
 
           //dans le cas ou l'on sort du formulaire d'ajout
           if(isset($this->data['submit'])){
@@ -236,6 +293,10 @@
         break;
 
         case 'vote':
+          //on récupère l'état courant de l'image pour la réafficher tel qu'elle était
+          self::initDataStart();
+          self::initDataSize();
+          self::initDataCategorieCommentaireVote();
           //on met à jour le nombre de vote et la note obtenue par la photo
           if (isset($_GET['nbvote'])) {
             $this->data['imgNbVotes'] = $_GET['nbvote']+1;
@@ -243,7 +304,7 @@
           //si vote positif
           if (isset($_GET['votes']) && $_GET['votes']==1) {
             $this->data['imgVotes'] = $this->data['imgVotes']+1;
-          } 
+          }
           //si vote negatif
           elseif (isset($_GET['votes']) && $_GET['votes']==0) {
             $this->data['imgVotes'] = $this->data['imgVotes']-1;

@@ -30,13 +30,13 @@
 				if (isset($_GET['categorieSearch'])) {
 					print "<a href=\"index.php?controller=photo&action=prevOfCat&imgId=".$this->data['imgId']."&size=".$this->data['size']."&categorieSearch=".$this->data['imgCategorie']."\">Prev</a> ";
 				} else {
-					print "<a href=\"index.php?controller=photo&action=prev&imgId=".$this->data['imgIdPrev']."&size=".$this->data['size']."\">Prev</a> ";
+					print "<a href=\"index.php?controller=photo&action=prev&imgId=".$this->data['imgId']."&size=".$this->data['size']."\">Prev</a> ";
 				}
 				//action pour image suivante
 				if (isset($_GET['categorieSearch'])) {
 					print "<a href=\"index.php?controller=photo&action=nextOfCat&imgId=".$this->data['imgId']."&size=".$this->data['size']."&categorieSearch=".$this->data['imgCategorie']."\">Next</a>\n";
 				} else {
-					print "<a href=\"index.php?controller=photo&action=next&imgId=".$this->data['imgIdNext']."&size=".$this->data['size']."\">Next</a>\n";
+					print "<a href=\"index.php?controller=photo&action=next&imgId=".$this->data['imgId']."&size=".$this->data['size']."\">Next</a>\n";
 				}
 			?>
 
@@ -94,7 +94,7 @@
 						<td><?php echo $this->data['imgVotes'] ?></td>
 					</tr>
 				</table>
-					
+
 				</form>
 
 				<!-- Affichage et modification du commentaire -->
