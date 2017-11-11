@@ -103,7 +103,6 @@
 				if($result && $result->local == 'true'){
 						$result->path = self::urlPath.'/'.$result->path;
 				}
-				var_dump($result);
 				$imgReturned = new Image($result->path,$result->id,$result->category,$result->comment, $result->nbvote, $result->vote);
 
 
