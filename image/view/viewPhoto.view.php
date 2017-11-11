@@ -27,13 +27,13 @@
 				# Mise en place des deux boutons
 				print "<p>\n";
 				//action pour image précédente
-				if (isset($_GET['categorieSearch'])) {
+				if (isset($this->data['categorieSearch'])) {
 					print "<a href=\"index.php?controller=photo&action=prevOfCat&imgId=".$this->data['imgId']."&size=".$this->data['size']."&categorieSearch=".$this->data['imgCategorie']."\">Prev</a> ";
 				} else {
 					print "<a href=\"index.php?controller=photo&action=prev&imgId=".$this->data['imgId']."&size=".$this->data['size']."\">Prev</a> ";
 				}
 				//action pour image suivante
-				if (isset($_GET['categorieSearch'])) {
+				if (isset($this->data['categorieSearch'])) {
 					print "<a href=\"index.php?controller=photo&action=nextOfCat&imgId=".$this->data['imgId']."&size=".$this->data['size']."&categorieSearch=".$this->data['imgCategorie']."\">Next</a>\n";
 				} else {
 					print "<a href=\"index.php?controller=photo&action=next&imgId=".$this->data['imgId']."&size=".$this->data['size']."\">Next</a>\n";
@@ -43,10 +43,9 @@
 				<!-- Champs de recherche des catégories -->
 				<form action="index.php" method="GET">
 	 			Recherche par catégorie:<br>
-	 			<input type="text" name="categorieSearch" list="categories" value="<?php echo $_SESSION['categorieSearch'];?>"><br>
+	 			<input type="text" name="categorieSearch" list="categories" value="<?php echo $this->data['categorieSearch'];?>"><br>
 				<datalist id="categories">
-					<?php foreach ($this->data['imgDAO']->getAllCategories() as $categorie) {
-
+					<?php foreach ($this->data['ListCategories'] as $categorie) {
 						print "<option value=\"".$categorie->category."\">";
 					};
 					?>

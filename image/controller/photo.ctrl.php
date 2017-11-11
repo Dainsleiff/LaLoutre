@@ -32,6 +32,7 @@
        $this->data['img'] = $this->data['imgDAO']->getImage($this->data['imgId']);
        $this->data['imgUrl'] = $this->data['img']->getURL();
        $this->data['imgCommentaire'] = $this->data['img']->getCommentaire();
+       $this->data['ListCategories'] = $this->data['imgDAO']->getAllCategories();
      } else {
        // Pas d'image, se positionne sur la première
        $this->data['img'] = $this->data['imgDAO']->getFirstImage();
@@ -68,10 +69,12 @@
      if(isset($_GET['categorieSearch'])){
        $_SESSION['categorieSearch'] = $_GET['categorieSearch'];
        $this->data['imgDAO']->setCategorieSearch($_SESSION['categorieSearch']);
+       $this->data['categorieSearch'] = $_GET['categorieSearch'];
      }
      else{
        if(!isset($_SESSION['categorieSearch'])){
          $_SESSION['categorieSearch'] = '';
+         $this->data['categorieSearch'] = $_SESSION['categorieSearch'];
        }
      }
      if(isset($_REQUEST['submit'])){
@@ -88,6 +91,7 @@
      else {
        $this->action = 'default';
      }
+     $this->data['ListCategories'] = $this->data['imgDAO']->getAllCategories();
    }
 
 
