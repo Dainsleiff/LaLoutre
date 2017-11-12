@@ -169,8 +169,7 @@
         $this->data['img'] = $this->data['imgDAO']->getNextImage($this->data['imgId']);
         $this->data['imgId'] = $this->data['img']->getId();
         $this->data['imgUrl'] = $this->data['img']->getURL();
-        $this->data['imgCommentaire'] = $this->data['img']->getCommentaire();
-        $this->data['imgCategorie'] = $this->data['img']->getCategorie();
+        self::initDataCategorieCommentaireVote();
         self::initTableau();
         include_once "view/viewPhoto.view.php";
         break;
@@ -179,11 +178,10 @@
         self::initDataStart();
         self::initDataCategorieSearch();
         self::initDataSize();
-        $img = $this->data['imgDAO']->getPrevImage($this->data['imgId']);
-        $this->data['imgId'] = $img->getId();
-        $this->data['imgUrl'] = $img->getURL();
-        $this->data['imgCommentaire'] = $img->getCommentaire();
-        $this->data['imgCategorie'] = $img->getCategorie();
+        $this->data['img'] = $this->data['imgDAO']->getPrevImage($this->data['imgId']);
+        $this->data['imgId'] = $this->data['img']->getId();
+        $this->data['imgUrl'] = $this->data['img']->getURL();
+        self::initDataCategorieCommentaireVote();
         self::initTableau();
         include_once "view/viewPhoto.view.php";
         break;
@@ -316,7 +314,7 @@
         break;
 
         case 'vote':
-          //on récupère l'état courant de l'image pour la réafficher tel qu'elle était
+          //on récupère l'état courant de l'image pour la réafficher telle qu'elle était
           self::initDataStart();
           self::initDataSize();
           self::initDataCategorieSearch();
@@ -333,7 +331,6 @@
           elseif (isset($_GET['votes']) && $_GET['votes']==0) {
             $this->data['imgVotes'] = $this->data['imgVotes']-1;
           }
-          var_dump($this->data['imgId']);
           $this->data['imgDAO']->addVote($this->data['imgId'], $this->data['imgNbVotes'], $this->data['imgVotes']);
           self::initTableau();
           include_once "view/viewPhoto.view.php";
