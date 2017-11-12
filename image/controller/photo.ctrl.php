@@ -146,6 +146,7 @@
         //on initialise le changement des données
         self::initDataPrevImg();
         self::initDataSize();
+        self::initDataCategorieCommentaireVote();
         //on initialisele tableau après avoir mis à jour les données
         self::initTableau();
          include_once "view/viewPhoto.view.php";
@@ -155,6 +156,7 @@
       //on initialise le changement des données (img,imgid,imgurl pour l'image suivante)
         self::initDataNextImg();
         self::initDataSize();
+        self::initDataCategorieCommentaireVote();
         //on initialise le menu après avoir mis à jour les données
         self::initTableau();
         include_once "view/viewPhoto.view.php";
