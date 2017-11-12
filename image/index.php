@@ -11,7 +11,7 @@ if($controller == null || $controller == ''){
 }
 //on reset à null la variable de session si bouton reset
 if(isset($_REQUEST['reset'])){
-  $_SESSION['categorieSearch'] = null;
+  unset($_SESSION['categorieSearch']);
 }
 $main->launchController($controller);
  ?>

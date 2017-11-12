@@ -191,6 +191,7 @@
       case 'zoomPlus':
         self::initDataStart();
         self::initDataSize();
+        self::initDataCategorieSearch();
         $this->data['size'] = $this->data['size'] * 1.25;
         self::initDataCategorieCommentaireVote();
         //on initialisele tableau après avoir mis à jour les données
@@ -202,6 +203,7 @@
         //on récupère l'état courant de l'image
         self::initDataStart();
         self::initDataSize();
+        self::initDataCategorieSearch();
         //on change la taille
         $this->data['size'] = $this->data['size'] * 0.75;
         self::initDataCategorieCommentaireVote();
@@ -231,6 +233,7 @@
             //on change le commentaire et/ou la catégorie
             self::initDataStart();
             self::initDataSize();
+            self::initDataCategorieSearch();
             //on appele la methode du DAO pour changer la categorie
             $this->data['imgCommentaire'] = $_GET['commentaire'];
             $this->data['imgCategorie'] = $_GET['categorie'];
@@ -316,6 +319,7 @@
           //on récupère l'état courant de l'image pour la réafficher tel qu'elle était
           self::initDataStart();
           self::initDataSize();
+          self::initDataCategorieSearch();
           self::initDataCategorieCommentaireVote();
           //on met à jour le nombre de vote et la note obtenue par la photo
           if (isset($_GET['nbvote'])) {
@@ -344,7 +348,7 @@
 
    private function initTableau(){
      //action du menu
-     $this->data['menu']['Home']='index.php';
+     $this->data['menu']['Home']='index.php?reset=reset';
      $this->data['menu']['aPropos']='index.php?controller=home&action=aPropos';
      if (isset($_GET['categorieSearch'])) {
       $this->data['menu']['First']='index.php?controller=photo&action=first&imgId='.$this->data['imgId']."&size=".$this->data['size'].'&categorieSearch='.$this->data['imgCategorie'];

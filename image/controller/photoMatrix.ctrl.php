@@ -233,7 +233,7 @@
 
     private function initTableau(){
       //action du menu
-      $this->data['menu']['Home']='index.php';
+      $this->data['menu']['Home']='index.php?reset=reset';
       $this->data['menu']['aPropos']='index.php?controller=home&action=aPropos';
       if (isset($_GET['categorieSearch'])) {
       $this->data['menu']['First']='index.php?controller=photo&action=first&imgId='.$this->data['imgId']."&size=".$this->data['size'].'&categorieSearch='.$this->data['imgCategorie'];
