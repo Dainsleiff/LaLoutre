@@ -13,7 +13,7 @@ class home{
     }
     $this->data['menu']['Home']='index.php';
     $this->data['menu']['aPropos']='index.php?controller=home&action=aPropos';
-    $this->data['menu']['Voir photos']='index.php?controller=photo&action=viewPhoto';
+    $this->data['menu']['Voir photos']='index.php?controller=photo&action=viewPhoto&imgId=1';
     $this->data['menu']['Ajouter une image'] = 'index.php?controller=photo&action=addImg';
   }
 

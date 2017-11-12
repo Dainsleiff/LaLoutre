@@ -8,8 +8,12 @@
 		</head>
 	<body>
 		<div id="entete" >
-			<h1>Site SIL3</h1>
+			<div class="ruban">
+				<h1>Site SIL3</h1>
 			</div>
+			<div class="ruban gauche"></div>
+			<div class="ruban droit"></div>
+		</div>
 		<div id="menu">
 			<h3>Menu</h3>
 			<ul>
@@ -23,6 +27,29 @@
 			</div>
 
 		<div id="corps">
+			<div class="rechercheCat">
+			<!-- Champs de recherche des catégories -->
+				<form id="searchthis" action="index.php" method="GET">
+		 			<input id="search" type="text" name="categorieSearch" list="categories" value="<?php
+		 				if(isset($this->data['categorieSearch'])){
+		 					echo $this->data['categorieSearch'];
+		 				} ?>" placeholder="Rechercher par catégorie"><br>
+					<datalist id="categories">
+						<?php foreach ($this->data['ListCategories'] as $categorie) {
+							print "<option value=\"".$categorie->category."\">";
+						}; ?>
+					</datalist>
+					<input type="hidden" name="controller" value="photo">
+					<input type="hidden" name="action" value="catPhoto">
+					<input type="hidden" name="imgId" value="<?php echo $this->data['imgId']; ?>">
+					<input class="search-btn" type="submit" name='submit' value="Lancer la recherche">
+				</form>
+				<form action="index.php" method="get">
+					<input type="hidden" name="controller" value="photo">
+					<input type="hidden" name="action" value="viewPhoto">
+					<input class="search-btn" type="submit" name="reset" value="Annuler la recherche">
+				</form>
+			</div>
 			<?php # mise en place de la vue partielle : le contenu central de la page
 				# Mise en place des deux boutons
 				print "<p>\n";
@@ -40,26 +67,6 @@
 				}
 			?>
 
-				<!-- Champs de recherche des catégories -->
-				<form action="index.php" method="GET">
-	 			Recherche par catégorie:<br>
-	 			<input type="text" name="categorieSearch" list="categories" value="<?php echo $this->data['categorieSearch'];?>"><br>
-				<datalist id="categories">
-					<?php foreach ($this->data['ListCategories'] as $categorie) {
-						print "<option value=\"".$categorie->category."\">";
-					};
-					?>
-				</datalist>
-				<input type="hidden" name="controller" value="photo">
-				<input type="hidden" name="action" value="catPhoto">
-				<input type="submit" name='submit' value="Validation">
- 				</fieldset>
-				</form>
-				<form class="" action="index.php" method="get">
-					<input type="hidden" name="controller" value="photo">
-					<input type="hidden" name="action" value="viewPhoto">
-					<input type="submit" name="reset" value="Annuler la recherche">
-				</form>
 
 				<?php
 				print "</p>\n";
@@ -71,7 +78,7 @@
 				print "</a>\n";
 				?>
 
-				<form class="no-border no-background" action="index.php" method="get">
+				<form class="vote" action="index.php" method="get">
 					<legend>Aimez vous cette photo ?</legend>
 					<input type="radio" name="votes" id="voteOui" value="1">
 					<label for="voteOui">Oui</label>
@@ -81,9 +88,9 @@
 					<input type="hidden" name="action" value="vote">
 					<input type="hidden" name="nbvote" value="<?php echo $this->data['imgNbVotes'] ?>">
 					<input type='hidden' name='imgId' value="<?php echo $this->data['imgId'];?>">
-					<input type="submit" name="submit" value="Envoyer le vote">
+					<input class="search-btn" type="submit" name="submit" value="Envoyer le vote">
 				</form>
-				<table>
+				<table class="vote">
 					<tr>
 						<th>Nombre de votes</th>
 						<th>Note</th>
@@ -97,7 +104,7 @@
 				</form>
 
 				<!-- Affichage et modification du commentaire -->
-				<form class="no-border no-background" action="index.php" method="get">
+				<form id="changer" class="no-border no-background" action="index.php" method="get">
 					<legend>Comment :</legend>
 					<input type="text" name="commentaire" value="<?php echo $this->data['imgCommentaire'];?>">
 					<legend>Category :</legend>
@@ -105,7 +112,7 @@
 					<input type='hidden' name='imgId' value="<?php echo $this->data['imgId'];?>">
 					<input type="hidden" name="controller" value="photo">
 					<input type="hidden" name="action" value="changeData">
-					<input type="submit" name='submit' value='Changer les infos'>
+					<input class="search-btn" type="submit" name='submit' value='Changer les informations de la photo'>
 				</form>
 			</div>
 

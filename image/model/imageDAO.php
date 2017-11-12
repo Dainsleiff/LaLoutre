@@ -416,6 +416,7 @@
 				$stmt->BindParam(':nbvote', $nbvotes, PDO::PARAM_INT);
 				$stmt->BindParam(':vote', $vote, PDO::PARAM_INT);
 				$stmt->BindParam(':id', $id, PDO::PARAM_INT);
+				var_dump($id);
 				$res = $stmt->execute();
 			} else {
 				print "Error in addVote while prepare.<br/>";

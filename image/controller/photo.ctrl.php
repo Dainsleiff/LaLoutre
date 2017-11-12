@@ -324,6 +324,7 @@
           elseif (isset($_GET['votes']) && $_GET['votes']==0) {
             $this->data['imgVotes'] = $this->data['imgVotes']-1;
           }
+          var_dump($this->data['imgId']);
           $this->data['imgDAO']->addVote($this->data['imgId'], $this->data['imgNbVotes'], $this->data['imgVotes']);
           self::initTableau();
           include_once "view/viewPhoto.view.php";

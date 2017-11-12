@@ -1,41 +1,113 @@
-body {  width: 90%;
-  font-family:"verdana", "arial", "sans-serif";  margin-left: auto;
+body {
+  width: 90%;
+  font-family:"verdana", "arial", "sans-serif";
+  margin-left: auto;
   margin-right: auto;
   color: 	#2F4F4F;
   border: 1px dotted navy;
   background-color: pink;
-   }
+}
 
+h1 {
+  color: rgb(52,73,94);
+  font-family: Bookman, URW Bookman L, serif;
+  text-align: center;
+  text-shadow: 2px 4px rgba(244,246,246,0.5) ;
+}
 #entete {
  border-bottom: 1px dotted navy;
 }
 
-
 #menu {
 	margin-top: 5px;
 	width:15%;
-	float: left;}
+	float: left;
+}
 
 #menu h3 {
 	text-align:center;
-	}
-#menu a:link, a:visited, a:active {
+  color: rgb(52,73,94);
+  font-family: Bookman, URW Bookman L, serif;
+}
+
+#menu a:link, a:visited, a:active {
   color: #483D8B; }
-  #menu a:hover {   color: #FFFFFF;  font-style: italic;   background-color: #99CCCC; }
-#corps{
+  
+#menu a:hover { 
+  color: #FFFFFF;
+  font-style: italic; 
+  background-color: rgb(210,180,222);
+ }
+
+#corps{
 	margin-left:13%;
 	padding: 10px;
 	border-left: 1px dotted navy;
 	overflow:hidden;
   background-color: pink;
- }
+
+ }
 
 #corps a:link, a:visited, a:active {
   color: #483D8B; }
-  #corps a:hover {   color: #FFFFFF;  font-style: italic;   background-color: #99CCCC;
+  
+#corps a:hover { 
+  color: #FFFFFF;
+  font-style: italic; 
+  background-color: rgb(210,180,222);
   }
-#pied {
+
+#pied {
 	margin-top: 20px;
 	border: 1px dotted navy;
 	clear:left;
   }
+.rechercheCat {
+  background-color: rgba(234,237,237,0.3);
+  padding: 10px;
+  border: solid 1px rgba(234,237,237,0.5);
+}
+#searchthis #search {
+  width: 98.5%;
+  box-sizing: border-box;
+  font-family: Lato, serif;
+  font-size: 18px;
+}
+.search-btn {
+  background-color: rgba(125,60,152,0.5);
+  border: solid 1px rgb(210,180,222);
+  padding: 5px;
+  width: 98.5%;
+  box-sizing: border-box;
+  font-family: Times, serif;
+  font-size: 13px;
+  text-transform: uppercase;
+  color: rgb(253,254,254);
+}
+.search-btn:hover {
+  background-color: rgb(253,254,254);
+  color: rgba(125,60,152,0.5);
+  cursor: pointer;
+}
+
+#changer legend, #changer input{
+  display: inline-block;
+}
+#changer {
+  margin-top: 20px;
+  border: 1px solid rgb(217,136,128);
+  padding: 5px;
+  border-radius: 10px;
+}
+
+.vote{
+  border: 1px solid rgb(217,136,128);
+  margin: 0px auto;
+  margin-top: 20px;
+  padding: 5px;
+}
+.vote td, .vote th {
+  border-right: 1px solid rgb(217,136,128);
+  padding: 5px;
+  text-align: center;
+}
