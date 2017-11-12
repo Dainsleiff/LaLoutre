@@ -14,6 +14,7 @@
 		private $imgEntry;
 		private $size = null;
 		private $categorieSearch = null;
+		private $popularity = null;
 		//objet PDO
 		private $db = null;
 		# Lecture récursive d'un répertoire d'images
@@ -238,6 +239,10 @@
 		function setCategorieSearch($categorie){
 			$this->categorieSearch = $categorie;
 		}
+		#Setter de l'attribut popularity
+		function setPopularity($popularity){
+			$this->popularity = $popularity;
+		}
 		# saute en avant ou en arrière de $nb images
 		# Retourne la nouvelle image
 		function jumpToImage(image $img,$nb,$avancer,$reculer) {
@@ -423,6 +428,82 @@
 				var_dump($err);
 				return null;
 			}
+		}
+
+		function getByPopularity($popularity){
+			if ($popularity == 1) {
+				$req = "SELECT * FROM image WHERE vote>=:vote ORDER BY vote DESC";
+			} else {
+				$req = "SELECT * FROM image WHERE vote<:vote ORDER BY vote ASC";
+			}
+			$stmt = $this->db->prepare($req);
+			if ($stmt==true) {
+				$stmt->BindParam(':vote', $popularity, PDO::PARAM_INT);
+				$stmt->execute();
+				$res = $stmt->fetchAll(PDO::FETCH_OBJ);
+				$result = $res[0];
+				//changement de l'url si url local
+				if($result && $result->local == 'true'){
+						$result->path = self::urlPath.'/'.$result->path;
+				}
+				$img = new Image($result->path,$result->id,$result->category,$result->comment, $result->nbvote, $result->vote);
+				return $img;
+			} else {
+				print "Error in addVote while prepare.<br/>";
+				$err = $this->db->errorInfo();
+				var_dump($err);
+				return null;
+			}
+		}
+
+		function getNextPopularity($id,$popularity){
+			if ($popularity == 1) {
+				$req = "SELECT * FROM image WHERE vote>=:vote ORDER BY vote DESC";
+			} else {
+				$req = "SELECT * FROM image WHERE vote<:vote ORDER BY vote ASC";
+			}
+			$stmt = $this->db->prepare($req);
+			$stmt->BindParam(':vote', $popularity, PDO::PARAM_INT);
+			$stmt->execute();
+			$result = $stmt->fetchAll(PDO::FETCH_OBJ);
+			
+			foreach ($result as $key => $value) {
+				if ($value->id == $id) {
+					$final = array_slice($result, $key+1);
+				}
+			}
+			if (count($final) == 0) {
+				// Si pas de résultats, on retourne la première image la plus/moins populaire
+				$img = $this->getImage($result[0]->id,1);
+			} else {
+				$img = $this->getImage($final[0]->id, 1);
+			}
+			return $img;
+		}
+
+		function getPrevPopularity($id,$popularity){
+			if ($popularity == 1) {
+				$req = "SELECT * FROM image WHERE vote>=:vote ORDER BY vote DESC";
+			} else {
+				$req = "SELECT * FROM image WHERE vote<:vote ORDER BY vote ASC";
+			}
+			$stmt = $this->db->prepare($req);
+			$stmt->BindParam(':vote', $popularity, PDO::PARAM_INT);
+			$stmt->execute();
+			$result = $stmt->fetchAll(PDO::FETCH_OBJ);
+			$result = array_reverse($result);
+			foreach ($result as $key => $value) {
+				if ($value->id == $id) {
+					$final = array_slice($result, $key+1);
+				}
+			}
+			if (count($final) == 0) {
+				// Si pas de résultats, on retourne la première image la plus/moins populaire
+				$img = $this->getImage($result[0]->id,1);
+			} else {
+				$img = $this->getImage($final[0]->id, 1);
+			}
+			return $img;
 		}
 
 }

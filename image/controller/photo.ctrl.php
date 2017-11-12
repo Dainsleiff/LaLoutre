@@ -86,6 +86,28 @@
        $this->data['submit'] = $_REQUEST['submit'];
      }
    }
+   function initDataPoularity(){
+     //on récupère la catégorie séléctionné si elle existe et on charge la popularity dans l'objet imgDAO
+     if(isset($_GET['popularity'])){
+       $_SESSION['popularity'] = $_GET['popularity'];
+       $this->data['imgDAO']->setCategorieSearch($_SESSION['popularity']);
+       $this->data['popularity'] = $_GET['popularity'];
+     }
+     else{
+       //si la variable $_SESSION['popularity'] (au lancement de l'application ou après un reset)
+       if(!isset($_SESSION['popularity'])){
+         $_SESSION['popularity'] = '';
+         $this->data['popularity'] = $_SESSION['popularity'];
+       }
+       //si il y a une recherche par popularité déja en cours (et que la variable dans $_SESSION existe, on la charge dans this->data)
+       if(isset($_SESSION['popularity'])){
+         $this->data['popularity'] = $_SESSION['popularity'];
+       }
+     }
+     if(isset($_REQUEST['submit'])){
+       $this->data['submit'] = $_REQUEST['submit'];
+     }
+   }
 
    function __construct() {
      $this->data['imgDAO'] = new ImageDAO();
@@ -135,8 +157,17 @@
        $this->data['img'] = $this->data['imgDAO']->getImage();
        $this->data['imgId'] = $this->data['img']->getId();
        $this->data['imgUrl'] = $this->data['img']->getURL();
-       $this->data['imgCommentaire'] = $this->data['img']->getCommentaire();
-       $this->data['imgCategorie'] = $this->data['img']->getCategorie();
+       self::initDataCategorieCommentaireVote();
+       self::initTableau();
+       include_once "view/viewPhoto.view.php";
+       break;
+
+       case 'popularityPhoto':
+       self::initDataSize();
+       self::initDataPoularity();
+       $this->data['img'] = $this->data['imgDAO']->getByPopularity($this->data['popularity']);
+       $this->data['imgId'] = $this->data['img']->getId();
+       $this->data['imgUrl'] = $this->data['img']->getURL();
        self::initDataCategorieCommentaireVote();
        self::initTableau();
        include_once "view/viewPhoto.view.php";
@@ -174,11 +205,35 @@
         include_once "view/viewPhoto.view.php";
         break;
 
+      case 'nextByPopularity':
+        self::initDataStart();
+        self::initDataPoularity();
+        self::initDataSize();
+        $this->data['img'] = $this->data['imgDAO']->getNextPopularity($this->data['imgId'], $this->data['popularity']);
+        $this->data['imgId'] = $this->data['img']->getId();
+        $this->data['imgUrl'] = $this->data['img']->getURL();
+        self::initDataCategorieCommentaireVote();
+        self::initTableau();
+        include_once "view/viewPhoto.view.php";
+        break;
+
       case 'prevOfCat':
         self::initDataStart();
         self::initDataCategorieSearch();
         self::initDataSize();
         $this->data['img'] = $this->data['imgDAO']->getPrevImage($this->data['imgId']);
+        $this->data['imgId'] = $this->data['img']->getId();
+        $this->data['imgUrl'] = $this->data['img']->getURL();
+        self::initDataCategorieCommentaireVote();
+        self::initTableau();
+        include_once "view/viewPhoto.view.php";
+        break;
+
+      case 'prevByPopularity':
+        self::initDataStart();
+        self::initDataPoularity();
+        self::initDataSize();
+        $this->data['img'] = $this->data['imgDAO']->getPrevPopularity($this->data['imgId'], $this->data['popularity']);
         $this->data['imgId'] = $this->data['img']->getId();
         $this->data['imgUrl'] = $this->data['img']->getURL();
         self::initDataCategorieCommentaireVote();
@@ -232,6 +287,7 @@
             self::initDataStart();
             self::initDataSize();
             self::initDataCategorieSearch();
+            self::initDataPoularity();
             //on appele la methode du DAO pour changer la categorie
             $this->data['imgCommentaire'] = $_GET['commentaire'];
             $this->data['imgCategorie'] = $_GET['categorie'];
@@ -318,6 +374,7 @@
           self::initDataStart();
           self::initDataSize();
           self::initDataCategorieSearch();
+          self::initDataPoularity();
           self::initDataCategorieCommentaireVote();
           //on met à jour le nombre de vote et la note obtenue par la photo
           if (isset($_GET['nbvote'])) {
@@ -365,6 +422,8 @@
      $this->data['menu']['Zoom +']="index.php?controller=photo&action=zoomPlus&imgId=".$this->data['imgId']."&size=".$this->data['size'];
      $this->data['menu']['Zoom -']="index.php?controller=photo&action=zoomMoins&imgId=".$this->data['imgId']."&size=".$this->data['size'];
      $this->data['menu']['Ajouter une image'] = 'index.php?controller=photo&action=addImg';
-   }
+    $this->data['menu']['Voir les plus populaires']='index.php?controller=photo&action=popularityPhoto&popularity=1';
+    $this->data['menu']['Voir les moins populaires']='index.php?controller=photo&action=popularityPhoto&popularity=0';
+  }
  }
- ?>
+?>

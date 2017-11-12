@@ -23,26 +23,29 @@
 			</div>
 
 		<div id="corps">
-				<!-- Champs de recherche des catégories -->
-				<form action="index.php" method="GET">
-	 			Recherche par catégorie:<br>
-	 			<input type="text" name="categorieSearch" list="categories" value="<?php echo $this->data['categorieSearch'];?>"><br>
-				<datalist id="categories">
-					<?php foreach ($this->data['ListCategories'] as $categorie) {
-						print "<option value=\"".$categorie->category."\">";
-					};
-					?>
-				</datalist>
-				<input type="hidden" name="controller" value="photo">
-				<input type="hidden" name="action" value="catPhoto">
-				<input type="submit" name='submit' value="Validation">
- 				</fieldset>
+			<div class="rechercheCat">
+			<!-- Champs de recherche des catégories -->
+				<form id="searchthis" action="index.php" method="GET">
+		 			<input id="search" type="text" name="categorieSearch" list="categories" value="<?php
+		 				if(isset($this->data['categorieSearch'])){
+		 					echo $this->data['categorieSearch'];
+		 				} ?>" placeholder="Rechercher par catégorie"><br>
+					<datalist id="categories">
+						<?php foreach ($this->data['ListCategories'] as $categorie) {
+							print "<option value=\"".$categorie->category."\">";
+						}; ?>
+					</datalist>
+					<input type="hidden" name="controller" value="photo">
+					<input type="hidden" name="action" value="catPhoto">
+					<input type="hidden" name="imgId" value="<?php echo $this->data['imgId']; ?>">
+					<input class="search-btn" type="submit" name='submit' value="Lancer la recherche">
 				</form>
-				<form class="" action="index.php" method="get">
-					<input type="hidden" name="controller" value="photoMatrix">
+				<form action="index.php" method="get">
+					<input type="hidden" name="controller" value="photo">
 					<input type="hidden" name="action" value="viewPhoto">
-					<input type="submit" name="reset" value="Annuler la recherche">
+					<input class="search-btn" type="submit" name="reset" value="Annuler la recherche">
 				</form>
+			</div>
 			<?php # mise en place de la vue partielle : le contenu central de la page
 				# Mise en place des deux boutons
 				print "<p>\n";
