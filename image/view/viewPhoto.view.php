@@ -54,13 +54,13 @@
 				# Mise en place des deux boutons
 				print "<p>\n";
 				//action pour image précédente
-				if (isset($this->data['categorieSearch'])) {
+				if (isset($this->data['categorieSearch']) && $this->data['categorieSearch']!='') {
 					print "<a href=\"index.php?controller=photo&action=prevOfCat&imgId=".$this->data['imgId']."&size=".$this->data['size']."&categorieSearch=".$this->data['imgCategorie']."\">Prev</a> ";
 				} else {
 					print "<a href=\"index.php?controller=photo&action=prev&imgId=".$this->data['imgId']."&size=".$this->data['size']."\">Prev</a> ";
 				}
 				//action pour image suivante
-				if (isset($this->data['categorieSearch'])) {
+				if (isset($this->data['categorieSearch']) && $this->data['categorieSearch']!='') {
 					print "<a href=\"index.php?controller=photo&action=nextOfCat&imgId=".$this->data['imgId']."&size=".$this->data['size']."&categorieSearch=".$this->data['imgCategorie']."\">Next</a>\n";
 				} else {
 					print "<a href=\"index.php?controller=photo&action=next&imgId=".$this->data['imgId']."&size=".$this->data['size']."\">Next</a>\n";

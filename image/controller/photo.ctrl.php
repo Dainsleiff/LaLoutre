@@ -72,8 +72,13 @@
        $this->data['categorieSearch'] = $_GET['categorieSearch'];
      }
      else{
+       //si la variable $_SESSION['categorieSearch'] (au lancement de l'application ou après un reset)
        if(!isset($_SESSION['categorieSearch'])){
          $_SESSION['categorieSearch'] = '';
+         $this->data['categorieSearch'] = $_SESSION['categorieSearch'];
+       }
+       //si il y a une recherche déja en cours (et que la variable dans $_SESSION existe, on la charge dans this->data)
+       if(isset($_SESSION['categorieSearch'])){
          $this->data['categorieSearch'] = $_SESSION['categorieSearch'];
        }
      }
@@ -141,7 +146,6 @@
         //on initialise le changement des données
         self::initDataPrevImg();
         self::initDataSize();
-        self::initDataCategorieCommentaireVote();
         //on initialisele tableau après avoir mis à jour les données
         self::initTableau();
          include_once "view/viewPhoto.view.php";
@@ -151,7 +155,6 @@
       //on initialise le changement des données (img,imgid,imgurl pour l'image suivante)
         self::initDataNextImg();
         self::initDataSize();
-        self::initDataCategorieCommentaireVote();
         //on initialise le menu après avoir mis à jour les données
         self::initTableau();
         include_once "view/viewPhoto.view.php";
